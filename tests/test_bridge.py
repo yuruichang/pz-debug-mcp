@@ -114,6 +114,14 @@ class LuaTests(unittest.TestCase):
         self.lua.globals().debugEnabled = True
         self.assertEqual(self.request('inspect_vehicle', expires=0)['error']['code'], 'EXPIRED')
 
+    def test_focus_pause_is_automatically_disabled_and_rechecked(self):
+        self.assertFalse(self.lua.globals().pauseOnFocusloss)
+        self.lua.execute('pauseOnFocusloss=true; debugEnabled=false; clock=clock+1000; B.tick()')
+        self.assertFalse(self.lua.globals().pauseOnFocusloss)
+        self.assertTrue(self.request('status')['result']['focus_pause']['disabled'])
+        self.lua.execute("pauseOnFocusloss=true; clock=clock+1000; B.start('server')")
+        self.assertTrue(self.lua.globals().pauseOnFocusloss)
+
     def test_wrong_session_endpoint_and_deduplication(self):
         self.lua.execute("count=0; B.registerTest('count', function() count=count+1; return {count=count} end)")
         self.request('run_test', {'name': 'count'})

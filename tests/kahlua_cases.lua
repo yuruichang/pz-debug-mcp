@@ -1,6 +1,10 @@
 local B = require 'PZDebugMCP/Bridge'
 require 'PZDebugMCP/Example'
 B.start('client')
+assert(not pauseOnFocusloss)
+pauseOnFocusloss = true
+clock = clock + 1000; B.tick()
+assert(not pauseOnFocusloss)
 assert(request('status').result.debug_enabled)
 assert(request('run_test', { name = 'bridge_self_test' }).result.result.passed)
 local vehicle = request('inspect_vehicle', { vehicle_id = 1, include_parts = true }).result.vehicle

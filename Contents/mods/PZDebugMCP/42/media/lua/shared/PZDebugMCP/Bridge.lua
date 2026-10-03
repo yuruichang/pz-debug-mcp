@@ -1,5 +1,6 @@
 if PZDebugMCP then return PZDebugMCP end
 local J = require 'PZDebugMCP/Json'
+local Focus = require 'PZDebugMCP/Focus'
 local B = { Json = J, tests = {}, modules = {}, traces = {}, events = {}, sequence = 0 }
 PZDebugMCP = B
 local handlers = {}
@@ -133,7 +134,7 @@ handlers.status = function()
             debug_errors = type(getLuaDebuggerErrors) == 'function', reload_lua = type(reloadLuaFile) == 'function',
             reload_server_lua = type(reloadServerLuaFile) == 'function', arbitrary_lua = false,
             breakpoint_control = false, paused_polling = B.pausedPolling },
-        tests = names(B.tests, 'test'), modules = names(B.modules, 'module') }
+        focus_pause = B.focusPause, tests = names(B.tests, 'test'), modules = names(B.modules, 'module') }
 end
 
 local function collectErrors()
@@ -349,14 +350,17 @@ function B.start(endpoint)
     B.path = 'PZDebugMCP/' .. endpoint .. '/'
     B.session = string.format('%.0f', now()) .. '-' .. tostring(ZombRand(1000000000))
     B.errorIndex, B.traceSequence, B.lastPoll, B.lastHeartbeat = 0, 0, 0, 0
+    B.focusPause = Focus.apply(endpoint)
     B.pausedPolling = Events.OnTickEvenPaused ~= nil
     local function tick()
         local timestamp = now()
         local ok, why = pcall(function()
             if timestamp - B.lastHeartbeat >= 1000 then
                 B.lastHeartbeat = timestamp
+                B.focusPause = Focus.apply(B.endpoint)
                 jsonWrite('heartbeat.json', { protocol = 1, session = B.session, endpoint = B.endpoint,
-                    timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.1.0', game_version = getCore():getVersionNumber() })
+                    timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.1.0',
+                    focus_pause = B.focusPause, game_version = getCore():getVersionNumber() })
             end
             if isDebug() then sampleTraces(timestamp) end
             if timestamp - B.lastPoll >= 100 then

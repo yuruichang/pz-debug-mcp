@@ -14,7 +14,13 @@ function getDebug() return debugEnabled end
 function isServer() return serverMode end
 function isClient() return clientMode end
 function ZombRand(maximum) return 12345 end
-function getCore() return { getVersionNumber = function() return '42.21.0-test' end } end
+pauseOnFocusloss = true
+local core = {
+    getVersionNumber = function() return '42.21.0-test' end,
+    getOptionPauseOnFocusloss = function() return pauseOnFocusloss end,
+    setOptionPauseOnFocusloss = function(self, value) pauseOnFocusloss = value end,
+}
+function getCore() return core end
 local function event()
     local callbacks = {}
     return {
