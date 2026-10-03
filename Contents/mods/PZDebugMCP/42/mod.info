@@ -1,5 +1,5 @@
 id=PZDebugMCP
 name=PZ Debug MCP
 description=原版 Debug 数据 MCP 桥：通用接口与对象查询、持续采集与历史归档、自动关闭失焦暂停、车辆采样、预定义测试及受控重载。
-modversion=0.2.1
+modversion=0.2.2
 versionMin=42.21

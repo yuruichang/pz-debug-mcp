@@ -1,11 +1,18 @@
 local B = require 'PZDebugMCP/Bridge'
 require 'PZDebugMCP/Example'
 B.start('client')
+local initialDecode = B.Json.decode
+local emptyDecodes = 0
+B.Json.decode = function(text)
+    if text == '' then emptyDecodes = emptyDecodes + 1 end
+    return initialDecode(text)
+end
 assert(not pauseOnFocusloss)
 pauseOnFocusloss = true
 clock = clock + 1000; B.tick()
 assert(not pauseOnFocusloss)
 assert(request('status').result.debug_enabled)
+assert(emptyDecodes == 0)
 local playerHandle = request('query_debug', { target = 'getPlayer' }).result.data.value.handle
 assert(request('query_debug', { target = playerHandle, member = 'getHealth' }).result.data.value == 75)
 local climateHandle = request('query_debug', { target = 'getClimateManager' }).result.data.value.handle

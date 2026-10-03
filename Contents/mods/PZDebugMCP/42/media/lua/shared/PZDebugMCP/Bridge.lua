@@ -129,7 +129,7 @@ local function names(registry, kind)
 end
 
 handlers.status = function()
-    return { protocol = 1, version = '0.2.1', game_version = getCore():getVersionNumber(),
+    return { protocol = 1, version = '0.2.2', game_version = getCore():getVersionNumber(),
         session = B.session, endpoint = B.endpoint, timestamp_ms = now(), debug_enabled = isDebug(),
         mode = isServer() and 'server' or (isClient() and 'multiplayer_client' or 'singleplayer'),
         capabilities = { inspect_vehicle = true, vehicle_trace = true, run_test = true,
@@ -324,7 +324,8 @@ local function poll()
     end
     if request.sequence <= B.lastSequence then return end
     local claimText = read('claim.json')
-    local claimOk, claim = pcall(J.decode, claimText or '')
+    local claimOk, claim = false, nil
+    if claimText and claimText ~= '' then claimOk, claim = pcall(J.decode, claimText) end
     if claimOk and type(claim) == 'table' and claim.session == B.session and claim.id == request.id then return end
     B.lastId, B.lastSequence = request.id, request.sequence
     if type(request.expires_ms) ~= 'number' or request.expires_ms < now() then
@@ -370,7 +371,7 @@ function B.start(endpoint)
                 B.lastHeartbeat = timestamp
                 B.focusPause = Focus.apply(B.endpoint)
                 jsonWrite('heartbeat.json', { protocol = 1, session = B.session, endpoint = B.endpoint,
-                    timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.2.1',
+                    timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.2.2',
                     focus_pause = B.focusPause, game_version = getCore():getVersionNumber() })
             end
             if timestamp - B.lastPoll >= 100 then

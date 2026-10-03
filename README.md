@@ -1,4 +1,4 @@
-# PZ Debug MCP 0.2.1
+# PZ Debug MCP 0.2.2
 
 把支持 MCP 的 AI 客户端连接到 Project Zomboid，通过原版 Debug/Lua API 持续记录游戏数据，按需查询对象与历史数据。覆盖角色、世界、天气、时间、物品、脚本、调试选项和 Lua 运行时等接口，保留车辆专用采样、预定义测试与受控重载。
 
@@ -202,7 +202,7 @@ if not B.reloading then init() end
 
 加 `-RefreshCatalog` 可从指定游戏重新提取全局及公开类型签名；生成内容只有接口元数据，不包含游戏实现。当前目录与测试针对 42.21.0，换版本仍需重新审核与实际联调。
 
-产物为 `dist/PZDebugMCP-mod-0.2.1.zip` 和 `dist/PZDebugMCP-source-0.2.1.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
+产物为 `dist/PZDebugMCP-mod-0.2.2.zip` 和 `dist/PZDebugMCP-source-0.2.2.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
 
 实际游戏验收：进入 Debug 测试存档 → `pz_status` 在线且 `debug_enabled=true` → 自检通过 → 驾驶车辆读取快照 → 完成一组拖挂采样 → 连续重载 `example_counter` 两次并确认测试仍能执行。服务端需另做同样的验收。
 

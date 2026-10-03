@@ -136,6 +136,11 @@ class LuaTests(unittest.TestCase):
         self.request('run_test', {'name': 'count'})
         self.assertEqual(self.lua.globals().count, 0)
 
+    def test_first_request_does_not_decode_absent_claim(self):
+        self.lua.execute("emptyDecodeCalls=0; local decode=B.Json.decode; B.Json.decode=function(text) if text=='' then emptyDecodeCalls=emptyDecodeCalls+1 end; return decode(text) end")
+        self.assertTrue(self.request('status')['ok'])
+        self.assertEqual(self.lua.globals().emptyDecodeCalls, 0)
+
     def test_old_request_cannot_replay_after_later_request(self):
         self.lua.execute("count=0; B.registerTest('count', function() count=count+1; return {} end)")
         self.request('run_test', {'name': 'count'})
