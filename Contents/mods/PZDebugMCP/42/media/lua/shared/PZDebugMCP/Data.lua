@@ -1,6 +1,7 @@
 local J = require 'PZDebugMCP/Json'
 local Catalog = require 'PZDebugMCP/Catalog'
 local Types = require 'PZDebugMCP/Types/Index'
+local Policy = require 'PZDebugMCP/ReadPolicy'
 local D = { catalog = Catalog }
 local globalByName = {}
 for _, entry in ipairs(Catalog.globals) do
@@ -12,17 +13,6 @@ local function number(value, default, low, high)
     if value == nil or value == J.null then value = default end
     if type(value) ~= 'number' or value ~= math.floor(value) or value < low or value > high then reject('ARGUMENT', 'Integer out of range') end
     return value
-end
-local function readable(name, returns)
-    if type(name) ~= 'string' or returns == 'void' then return false end
-    if not (name:match('^get') or name:match('^is') or name:match('^has') or name:match('^can')
-        or name:match('^contains') or name == 'size' or name == 'length' or name == 'keySet' or name == 'values' or name == 'entrySet') then return false end
-    for _, prefix in ipairs({ 'getNext', 'getNew', 'getFree', 'getOrCreate', 'getOrSet', 'getOrDefault',
-        'getAnd', 'getRandom', 'getFileReader', 'getFileWriter', 'getModFileReader', 'getModFileWriter',
-        'getSandboxFile', 'getTexture', 'getSoundBuffer', 'getSteamWorkshopStaging' }) do
-        if name:sub(1, #prefix) == prefix then return false end
-    end
-    return name ~= 'hasDataBreakpoint' and name ~= 'hasDataReadBreakpoint'
 end
 local function errorValue(why)
     if type(why) == 'table' and why.code then return why end
@@ -62,25 +52,20 @@ local function descriptor(value, origin, depth, hint)
         s.handlesEvicted = s.handlesEvicted + 1
     end
     s.handleSlots[slot] = id
-    local actual = safe(function() return value:getClass():getName() end)
-    if not actual and kind == 'userdata' then
-        actual = safe(function()
-            if getNumClassFunctions(value) > 0 then
-                return tostring(getClassFunction(value, 0)):match('%s([%w_.$]+)%.[%w_]+%(')
-            end
-            if getNumClassFields(value) > 0 then
-                return tostring(getClassField(value, 0)):match('%s([%w_.$]+)%.[%w_]+$')
-            end
-        end)
-    end
-    local className = type(actual) == 'string' and actual or (type(hint) == 'string' and hint:gsub('<.*>', '') or nil)
+    local className = type(hint) == 'string' and hint:gsub('<.*>', '') or nil
     if className == 'java.lang.Class' or className == 'java.lang.ClassLoader' or className == 'java.lang.invoke.MethodHandles$Lookup' then
         return { kind = 'restricted', class = className, reason = 'official_debug_reflection_restriction' }
+    end
+    if kind == 'userdata' and className and Types[className] and className ~= 'java.lang.Object' then
+        local count = getNumClassFunctions(value)
+        if count > 0 then
+            className = tostring(getClassFunction(value, 0)):match('%s([%w_.$]+)%.[%w_]+%(') or className
+        end
     end
     local entry = { value = value, origin = origin, depth = depth or 0,
         class = className }
     s.handles[id], s.reverse[value] = entry, id
-    if entry.depth <= s.config.max_depth and (kind == 'table' or kind == 'userdata') then
+    if entry.depth <= s.config.max_depth and kind == 'table' and rawget(value, '__debugNative') ~= true and origin ~= 'root:_G' then
         enqueue({ handle = id, offset = 0, automatic = true })
     else s.depthLimited = s.depthLimited + 1 end
     return { kind = kind, handle = id, class = entry.class }
@@ -139,10 +124,11 @@ local function globalCall(name, args)
     local permitted = false
     local selected
     for _, entry in ipairs(entries) do
-        if entry.readable and #entry.parameters == count then permitted = true; selected = entry end
+        if entry.readable and Policy.globalAllowed(name, entry.parameters) and #entry.parameters == count then permitted = true; selected = entry end
     end
     if not permitted then reject('NOT_A_READER', 'API is not a reader or argument count is incorrect') end
     if type(_G[name]) ~= 'function' then reject('API_UNAVAILABLE', 'API is not exposed in this execution context') end
+    if not Policy.nativeCallable(_G[name]) then reject('UNREVIEWED_CALLABLE', 'Global API was replaced by an unreviewed Lua function') end
     return _G[name](unpack(values, 1, count)), selected.returns
 end
 
@@ -153,18 +139,21 @@ end
 local function methodInfo(value, index)
     local method = getClassFunction(value, index)
     local text = tostring(method)
-    local name = safe(function() return method:getName() end) or text:match('%.([%w_]+)%(')
+    local nameReader = Policy.member(method, 'getName')
+    local name = nameReader and nameReader(method) or text:match('%.([%w_]+)%(')
     if not name then reject('METADATA_UNAVAILABLE', 'Method name unavailable') end
     local count = getMethodParameterCount(method)
     local args = J.array()
     for i = 0, count - 1 do args[#args + 1] = getMethodParameter(method, i) end
-    local returns = safe(function() return method:getReturnType():getName() end) or text:match('(%S+)%s+[^%s%(]+%(') or 'unknown'
+    local returns = text:match('(%S+)%s+[^%s%(]+%(') or 'unknown'
+    local owner = text:match('%s([%w_.$]+)%.[%w_]+%(')
     return { kind = 'method', name = name, parameters = args, returns = returns,
-        readable = readable(name, returns), available = safe(function() return value[name] ~= nil end) == true }
+        declaring_class = owner, readable = Policy.methodAllowed(owner, name, args), available = Policy.member(value, name) ~= nil }
 end
 
 local function fieldName(field, index)
-    return safe(function() return field:getName() end) or tostring(field):match('%.([%w_]+)$') or ('field_' .. tostring(index))
+    local reader = Policy.member(field, 'getName')
+    return reader and reader(field) or tostring(field):match('%.([%w_]+)$') or ('field_' .. tostring(index))
 end
 
 local function objectLayout(entry)
@@ -172,6 +161,11 @@ local function objectLayout(entry)
     if entry.layout then return entry.layout end
     local layout = { fields = 0, methods = 0 }
     if native(value) then
+        if type(value) == 'userdata' and (not entry.class or entry.class == 'java.lang.Object') then
+            layout.error = { code = 'UNVERIFIED_OBJECT', message = 'Object has no verified type metadata' }
+            entry.layout = layout
+            return layout
+        end
         local fieldCount, fieldError = safe(function() return getNumClassFields(value) end)
         local methodCount, methodError = safe(function() return getNumClassFunctions(value) end)
         layout.fields, layout.methods = fieldCount or 0, methodCount or 0
@@ -187,8 +181,8 @@ local function objectLayout(entry)
                 if not signatures[key] then
                     signatures[key] = true
                     public[#public + 1] = { kind = 'method', name = method.name, returns = method.returns,
-                        parameters = J.array(method.parameters), readable = method.readable,
-                        available = safe(function() return value[method.name] ~= nil end) == true, declaring_class = name }
+                        parameters = J.array(method.parameters), readable = Policy.methodAllowed(name, method.name, method.parameters),
+                        available = Policy.member(value, method.name) ~= nil, declaring_class = name }
                 end
             end
             for _, parent in ipairs(class.parents) do addClass(parent) end
@@ -224,7 +218,7 @@ local function inspect(id, offset, limit, values)
             end
             if layout.keys then
                 local key = layout.keys[i + 1]
-                return { kind = 'table_entry', key = key, value = descriptor(value[key], entry.origin .. '.' .. tostring(key), entry.depth + 1) }
+                return { kind = 'table_entry', key = key, value = descriptor(rawget(value, key), entry.origin .. '.' .. tostring(key), entry.depth + 1) }
             end
             if i < layout.fields then
                 local field = getClassField(value, i)
@@ -238,7 +232,7 @@ local function inspect(id, offset, limit, values)
             if original then for key, child in pairs(original) do info[key] = child end
             else info = methodInfo(value, i - layout.fields) end
             if values and info.readable and info.available and #info.parameters == 0 then
-                local got, why = safe(function() return value[info.name](value) end)
+                local got, why = safe(function() return Policy.member(value, info.name)(value) end)
                 if why then info.error = why
                 else info.value = descriptor(got, entry.origin .. ':' .. info.name, entry.depth + 1, info.returns) end
             end
@@ -287,7 +281,7 @@ function D.query(args)
         if type(object) ~= 'table' or native(object) then reject('ARGUMENT', 'Target is not a Lua table') end
         local key = args.member
         if type(key) ~= 'string' and type(key) ~= 'number' and type(key) ~= 'boolean' then reject('ARGUMENT', 'Table key must be scalar') end
-        data = { key = key, value = descriptor(object[key], entry.origin .. '.' .. tostring(key), entry.depth + 1) }
+        data = { key = key, value = descriptor(rawget(object, key), entry.origin .. '.' .. tostring(key), entry.depth + 1) }
     elseif action == 'field' then
         local object = handle(target).value
         local index = args.field_index
@@ -306,8 +300,6 @@ function D.query(args)
         local value
         if entry then
             if not native(entry.value) then reject('NOT_A_READER', 'Lua functions and table functions are not executed') end
-            if not readable(args.member) then reject('NOT_A_READER', 'Only read methods are accepted') end
-            if entry.value[args.member] == nil then reject('API_UNAVAILABLE', 'Method is not exposed') end
             local arguments, count = callArguments(args.arguments)
             local layout = objectLayout(entry)
             local selected
@@ -316,7 +308,9 @@ function D.query(args)
                 if method.name == args.member and #method.parameters == count and method.readable then selected = method; break end
             end
             if not selected then reject('NOT_A_READER', 'Method signature is not a public reader with this argument count') end
-            value = entry.value[args.member](entry.value, unpack(arguments, 1, count))
+            local callback = Policy.member(entry.value, args.member)
+            if not callback then reject('API_UNAVAILABLE', 'Method is not exposed') end
+            value = callback(entry.value, unpack(arguments, 1, count))
             data = { value = descriptor(value, entry.origin .. ':' .. args.member, entry.depth + 1, selected.returns) }
         elseif target:sub(1, 5) == 'root:' then
             local key = target:sub(6)
@@ -343,7 +337,7 @@ function D.status()
         root_passes = s.rootPasses, roots_visited = s.rootsVisited, pending_jobs = s.queueTail - s.queueHead,
         handles_created = s.handleSequence, handles_evicted = s.handlesEvicted,
         queue_dropped = s.queueDropped, depth_limited = s.depthLimited, config = s.config,
-        coverage = 'bounded_loaded_state', requires_arguments_are_on_demand = true,
+        coverage = 'reviewed_readers_only', read_policy = 'reviewed_allowlist_v1', automatic_object_graph = false, requires_arguments_are_on_demand = true,
         records_directory = 'Lua/PZDebugMCP/' .. D.endpoint .. '/records',
         last_error = s.lastError or J.null }
 end
@@ -406,7 +400,7 @@ end
 function D.start(bridge, writer)
     D.endpoint, D.write = bridge.endpoint, writer
     local roots, seen = {}, {}
-    local priority = { 'getPlayer', 'getCell', 'getWorld', 'getClimateManager', 'getGameTime', 'getCore', 'getDebugOptions', 'getCurrentCoroutine' }
+    local priority = { 'getPlayer', 'getCell', 'getWorld', 'getClimateManager', 'getGameTime', 'getCore' }
     for _, name in ipairs(priority) do
         if globalByName[name] then roots[#roots + 1] = name; seen[name] = true end
     end
@@ -415,7 +409,7 @@ function D.start(bridge, writer)
             roots[#roots + 1] = entry.name; seen[entry.name] = true
         end
     end
-    for _, name in ipairs({ 'root:_G', 'root:SandboxVars', 'root:SandboxOptions', 'root:ModData' }) do roots[#roots + 1] = name end
+    roots[#roots + 1] = 'root:SandboxVars'
     D.state = { session = bridge.session, sequence = 0, slot = 1, segments = {}, recent = {}, handles = {},
         reverse = {}, handleSlots = {}, handleSequence = 0, handlesEvicted = 0, queue = {}, queueHead = 0, queueTail = 0,
         queueDropped = 0, depthLimited = 0, roots = roots, rootIndex = 1, rootPasses = 0, rootsVisited = 0,
@@ -428,12 +422,43 @@ end
 local function collectRoot(name)
     local s = D.state
     if s.unavailable[name] and type(_G[name]) ~= 'function' then return end
+    if name:sub(1, 5) ~= 'root:' then
+        if type(_G[name]) ~= 'function' then
+            s.unavailable[name] = true
+            appendRecord('global', name, { error = { code = 'API_UNAVAILABLE', message = 'API is not exposed' } })
+            return
+        end
+        if not Policy.nativeCallable(_G[name]) then
+            appendRecord('global', name, { error = { code = 'UNREVIEWED_CALLABLE', message = 'Lua override not executed' } })
+            return
+        end
+    end
     local ok, value, hint = pcall(function()
         if name:sub(1, 5) == 'root:' then return _G[name:sub(6)] end
         return globalCall(name, J.array())
     end)
     if not ok and type(value) == 'table' and value.code == 'API_UNAVAILABLE' then s.unavailable[name] = true end
-    appendRecord('global', name, ok and { value = descriptor(value, name, 0, hint) } or { error = errorValue(value) })
+    local data = ok and { value = descriptor(value, name, 0, hint) } or { error = errorValue(value) }
+    if ok and value ~= nil then
+        local methods = Policy.automaticMethods[name]
+        if methods then
+            data.properties = {}
+            for _, member in ipairs(methods) do
+                local entry = type(data.value) == 'table' and data.value.handle and s.handles[data.value.handle]
+                if entry then
+                    local layout = objectLayout(entry)
+                    for i = 1, layout.methods do
+                        local method = layout.methodEntries and layout.methodEntries[i] or methodInfo(value, i - 1)
+                        if method.name == member and method.readable and method.available and #method.parameters == 0 then
+                            data.properties[member] = Policy.member(value, member)(value)
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+    appendRecord('global', name, data)
 end
 
 function D.tick(timestamp, debugEnabled)
@@ -478,7 +503,7 @@ function D.tick(timestamp, debugEnabled)
             s.queue, s.queueHead, s.queueTail = {}, 0, 0
             s.refreshAt = timestamp + s.config.refresh_seconds * 1000
             for id, entry in pairs(s.handles) do
-                if entry.depth <= s.config.max_depth and (type(entry.value) == 'table' or type(entry.value) == 'userdata') then
+                if entry.depth <= s.config.max_depth and type(entry.value) == 'table' and not native(entry.value) and entry.origin ~= 'root:_G' then
                     entry.layout = nil
                     enqueue({ handle = id, offset = 0, automatic = true })
                 end

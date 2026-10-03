@@ -188,6 +188,9 @@ class Bridge:
         index = read_json(directory / "index.json")
         if not index or index.get("schema") != 1:
             return {"records": [], "cursor": after, "missing": True, "session": None, "has_more": False}
+        if not isinstance(index.get('recorder'), dict) or index['recorder'].get('read_policy') != 'reviewed_allowlist_v1':
+            return {"records": [], "cursor": after, "session": None, "has_more": False,
+                    "blocked": True, "reason": "Unverified or legacy recording policy; data files were not read"}
         current = index.get("session")
         reset = bool(session and session != current)
         if reset:

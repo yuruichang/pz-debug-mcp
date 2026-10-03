@@ -1,0 +1,24 @@
+{
+  "target_build": "42.21.0",
+  "review": "Local bytecode reviewed: existing singletons, scalar fields, debugger metadata and a detached error-list copy; no game-state or asset mutation.",
+  "globals": {
+    "getCore": [[]], "getPlayer": [[]], "getCell": [[]], "getWorld": [[]],
+    "getClimateManager": [[]], "getGameTime": [[]], "getDebug": [[]], "getTimestampMs": [[]],
+    "getLuaDebuggerErrors": [[]], "getNumClassFields": [["java.lang.Object"]],
+    "getClassField": [["java.lang.Object", "int"]],
+    "getClassFieldVal": [["java.lang.Object", "java.lang.reflect.Field"]],
+    "getNumClassFunctions": [["java.lang.Object"]], "getClassFunction": [["java.lang.Object", "int"]],
+    "getMethodParameterCount": [["java.lang.reflect.Method"]], "getMethodParameter": [["java.lang.reflect.Method", "int"]]
+  },
+  "methods": {
+    "zombie.characters.IsoGameCharacter": {"getHealth": [[]]},
+    "zombie.iso.IsoMovingObject": {"getX": [[]], "getY": [[]], "getZ": [[]]},
+    "zombie.iso.weather.ClimateManager": {"getTemperature": [[]]},
+    "zombie.GameTime": {"getTimeOfDay": [[]], "getYear": [[]], "getMonth": [[]], "getDay": [[]]},
+    "zombie.core.Core": {"getVersionNumber": [[]], "getOptionPauseOnFocusloss": [[]]}
+  },
+  "automatic_methods": {
+    "getPlayer": ["getHealth", "getX", "getY", "getZ"], "getClimateManager": ["getTemperature"],
+    "getGameTime": ["getTimeOfDay", "getYear", "getMonth", "getDay"], "getCore": ["getVersionNumber", "getOptionPauseOnFocusloss"]
+  }
+}

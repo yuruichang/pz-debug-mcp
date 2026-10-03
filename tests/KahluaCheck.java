@@ -42,16 +42,24 @@ public final class KahluaCheck {
             exposer.exposeGlobalClassFunction(environment, Reflection.class, method, method.getName());
         }
         environment.rawset("realObject", new ReadableObject());
+        environment.rawset("realOpaque", new OpaqueObject());
         run(thread, environment, "assert(getNumClassFields ~= nil,'missing fields API'); " +
-            "assert(getNumClassFields(realObject)==1); local f=getClassField(realObject,0); " +
+            "assert(getNumClassFields(realObject)==2); local f=getClassField(realObject,0); " +
             "assert(getClassFieldVal(realObject,f)==76);", "native_surface");
         run(thread, environment, "local B=PZDebugMCP; local J=B.Json; " +
+            "local P=require 'PZDebugMCP/ReadPolicy'; P.methods['KahluaCheck$ReadableObject']={getHealth={['']=true}}; " +
             "getPlayer=function() return realObject end; " +
             "local r=request('query_debug',{target='getPlayer'}); assert(r.ok); " +
             "local h=r.result.data.value.handle; " +
             "local a=request('query_debug',{target=h,member='getHealth'}); assert(a.ok,J.encode(a)); assert(a.result.data.value==76); " +
             "local b=request('query_debug',{target=h,action='field',member='health'}); assert(b.ok,J.encode(b)); assert(b.result.data.value==76); " +
-            "assert(not request('query_debug',{target=h,member='setHealth',arguments=J.array({1})}).ok);", "native_java");
+            "assert(not request('query_debug',{target=h,member='setHealth',arguments=J.array({1})}).ok); " +
+            "assert(not request('query_debug',{target=h,member='getMystery'}).ok); " +
+            "request('query_debug',{target=h,action='inspect',limit=100}); assert(realObject:getSideEffectCount()==0);", "native_java");
+        int errorsBefore = KahluaThread.m_errors_list.size();
+        run(thread, environment, "local B=PZDebugMCP; SandboxVars.opaque=realOpaque; SandboxVars.getClass=function() error('must not execute') end; " +
+            "request('query_debug',{target='root:SandboxVars'}); for i=1,20 do clock=clock+100; B.tick() end;", "opaque_collection");
+        if (KahluaThread.m_errors_list.size() != errorsBefore) throw new AssertionError("Routine collection emitted Lua errors");
         System.out.println("Kahlua integration checks passed");
     }
     private static void run(KahluaThread thread, KahluaTable env, String source, String name) throws Exception {
@@ -62,11 +70,17 @@ public final class KahluaCheck {
         public double health = 76;
         public double getHealth() { return health; }
         public void setHealth(double value) { health = value; }
+        private int sideEffects;
+        public double getMystery() { sideEffects++; return 1; }
+        public int getSideEffectCount() { return sideEffects; }
     }
+    public static final class OpaqueObject { }
     public static final class Reflection {
         public static int getNumClassFields(Object object) { return object.getClass().getDeclaredFields().length; }
         public static java.lang.reflect.Field getClassField(Object object, int index) { return object.getClass().getDeclaredFields()[index]; }
-        public static Object getClassFieldVal(Object object, java.lang.reflect.Field field) throws Exception { return field.get(object); }
+        public static Object getClassFieldVal(Object object, java.lang.reflect.Field field) {
+            try { return field.get(object); } catch (IllegalAccessException error) { return "<private>"; }
+        }
         public static int getNumClassFunctions(Object object) { return object.getClass().getDeclaredMethods().length; }
         public static java.lang.reflect.Method getClassFunction(Object object, int index) { return object.getClass().getDeclaredMethods()[index]; }
         public static int getMethodParameterCount(java.lang.reflect.Method method) { return method.getParameterCount(); }

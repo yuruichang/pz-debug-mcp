@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from pz_debug_mcp.bridge import Bridge, atomic_json
 from pz_debug_mcp.record_store import RecordStore
@@ -15,7 +16,7 @@ class DebugDataTests(unittest.TestCase):
         first = self.request('list_debug_interfaces', {'limit': 100})['result']
         self.assertEqual(first['total'], 764)
         readers = self.request('list_debug_interfaces', {'readers_only': True})['result']
-        self.assertEqual(readers['total'], 330)
+        self.assertEqual(readers['total'], 16)
         self.assertTrue(first['has_more'])
         self.assertEqual(self.request('list_debug_interfaces', {'offset': 764})['result']['items'], [])
 
@@ -47,6 +48,33 @@ class DebugDataTests(unittest.TestCase):
         self.assertEqual(self.request('query_debug', {'target': player, 'member': 'getHealth', 'arguments': [1]})['error']['code'], 'NOT_A_READER')
         table = self.request('query_debug', {'target': 'root:_G'})['result']['data']['value']['handle']
         self.assertFalse(self.request('query_debug', {'target': table, 'member': 'getPlayer'})['ok'])
+
+    def test_unknown_getter_is_never_called_or_auto_collected(self):
+        self.lua.execute("unreviewedCalls=0; getSoundManager=function() unreviewedCalls=unreviewedCalls+1; return {} end; getPlayer().getMystery=function() unreviewedCalls=unreviewedCalls+1; return 1 end")
+        self.assertFalse(self.request('query_debug', {'target': 'getSoundManager'})['ok'])
+        player = self.request('query_debug', {'target': 'getPlayer'})['result']['data']['value']['handle']
+        self.assertFalse(self.request('query_debug', {'target': player, 'member': 'getMystery'})['ok'])
+        self.request('query_debug', {'target': player, 'action': 'inspect', 'limit': 100})
+        self.lua.execute('for i=1,30 do clock=clock+100; B.tick() end')
+        self.assertEqual(self.lua.globals().unreviewedCalls, 0)
+
+    def test_lua_override_is_refused_before_it_runs(self):
+        self.lua.execute("overrideCalls=0; getPlayer=function() overrideCalls=overrideCalls+1 end; instanceof=function(object,name) return name=='LuaClosure' end")
+        result = self.request('query_debug', {'target': 'getPlayer'})
+        self.assertEqual(result['error']['code'], 'UNREVIEWED_CALLABLE')
+        self.assertEqual(self.lua.globals().overrideCalls, 0)
+
+    def test_stop_command_precedes_next_collection(self):
+        before = self.lua.globals().B.Data.state.sequence
+        self.request('configure_recorder', {'enabled': False})
+        self.assertEqual(self.lua.globals().B.Data.state.sequence, before)
+
+    def test_table_introspection_does_not_call_getclass_or_index_hooks(self):
+        self.lua.execute("probeCalls=0; SandboxVars.getClass=function() probeCalls=probeCalls+1 end; setmetatable(SandboxVars,{__index=function() probeCalls=probeCalls+1 end})")
+        table = self.request('query_debug', {'target': 'root:SandboxVars'})['result']['data']['value']['handle']
+        self.request('query_debug', {'target': table, 'action': 'table', 'member': 'missing'})
+        self.lua.execute('for i=1,15 do clock=clock+100; B.tick() end')
+        self.assertEqual(self.lua.globals().probeCalls, 0)
 
     def test_object_handle_arguments_to_official_debug_helpers(self):
         player = self.request('query_debug', {'target': 'getPlayer'})['result']['data']['value']['handle']
@@ -90,6 +118,29 @@ class DebugDataTests(unittest.TestCase):
 
 
 class RecordedDataTests(unittest.TestCase):
+    def test_unreviewed_archive_session_is_not_returned(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            store = RecordStore(Bridge(Path(temporary)))
+            connection = store.connect('client')
+            with connection:
+                connection.execute("INSERT INTO sessions(session) VALUES ('legacy')")
+                connection.execute("INSERT INTO metadata VALUES ('current_session','legacy')")
+                connection.execute("INSERT INTO records VALUES ('legacy',1,'unsafe','global','{\"value\":123}')")
+            connection.close()
+            result = store.read('client')
+            self.assertTrue(result['blocked'])
+            self.assertEqual(result['records'], [])
+            self.assertEqual(result['available_sessions'], [])
+
+    def test_unreviewed_recordings_are_not_opened(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            bridge = Bridge(Path(temporary))
+            index = {'schema': 1, 'session': 'old', 'segments': [{'slot': 1}], 'recorder': {'coverage': 'bounded_loaded_state'}}
+            with patch('pz_debug_mcp.bridge.read_json', return_value=index), patch.object(Path, 'open', side_effect=AssertionError('Unreviewed data read')):
+                result = bridge.recorded('client')
+            self.assertTrue(result['blocked'])
+            self.assertEqual(result['records'], [])
+
     def test_archive_keeps_old_segments_and_previous_sessions(self):
         with tempfile.TemporaryDirectory() as temporary:
             bridge = Bridge(Path(temporary))
@@ -99,7 +150,7 @@ class RecordedDataTests(unittest.TestCase):
             def publish(session, start, end):
                 rows = [{'session': session, 'sequence': n, 'target': 'player', 'kind': 'global', 'data': {'value': n}} for n in range(start, end + 1)]
                 (directory / 'segment-01.log').write_text(''.join(json.dumps(row) + '\n' for row in rows), encoding='utf-8')
-                atomic_json(directory / 'index.json', {'schema': 1, 'session': session, 'first': start, 'last': end, 'segments': [{'slot': 1}]})
+                atomic_json(directory / 'index.json', {'schema': 1, 'session': session, 'first': start, 'last': end, 'segments': [{'slot': 1}], 'recorder': {'read_policy': 'reviewed_allowlist_v1'}})
             publish('first', 1, 3)
             store.sync('client')
             publish('first', 4, 6)
@@ -117,7 +168,7 @@ class RecordedDataTests(unittest.TestCase):
             directory.mkdir(parents=True)
             row = {'session': 'test', 'sequence': 20, 'target': 'world', 'kind': 'object', 'data': {}}
             (directory / 'segment-01.log').write_text(json.dumps(row) + '\n', encoding='utf-8')
-            atomic_json(directory / 'index.json', {'schema': 1, 'session': 'test', 'first': 20, 'last': 20, 'segments': [{'slot': 1}]})
+            atomic_json(directory / 'index.json', {'schema': 1, 'session': 'test', 'first': 20, 'last': 20, 'segments': [{'slot': 1}], 'recorder': {'read_policy': 'reviewed_allowlist_v1'}})
             result = RecordStore(bridge).read('client')
             self.assertEqual(result['gaps'], [{'first': 1, 'last': 19}])
             self.assertTrue(result['gap'])
@@ -129,7 +180,7 @@ class RecordedDataTests(unittest.TestCase):
             directory.mkdir(parents=True)
             entries = [{'session': 'test', 'sequence': i, 'target': 'player' if i % 2 else 'weather', 'kind': 'object', 'data': {'value': i}} for i in range(1, 7)]
             (directory / 'segment-01.log').write_bytes(('\n'.join(json.dumps(e) for e in entries) + '\n{"partial":').encode())
-            atomic_json(directory / 'index.json', {'schema': 1, 'session': 'test', 'first': 1, 'last': 6, 'segments': [{'slot': 1}]})
+            atomic_json(directory / 'index.json', {'schema': 1, 'session': 'test', 'first': 1, 'last': 6, 'segments': [{'slot': 1}], 'recorder': {'read_policy': 'reviewed_allowlist_v1'}})
             first = bridge.recorded('client', target='player', limit=2)
             self.assertEqual([e['sequence'] for e in first['records']], [1, 3])
             self.assertTrue(first['has_more'])

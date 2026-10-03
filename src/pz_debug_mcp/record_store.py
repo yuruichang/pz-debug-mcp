@@ -23,11 +23,16 @@ class RecordStore:
                 session TEXT, sequence INTEGER, target TEXT, kind TEXT, payload TEXT,
                 PRIMARY KEY(session, sequence));
             CREATE TABLE IF NOT EXISTS sessions (
-                session TEXT PRIMARY KEY, cursor INTEGER NOT NULL DEFAULT 0, observed INTEGER NOT NULL DEFAULT 0);
+                session TEXT PRIMARY KEY, cursor INTEGER NOT NULL DEFAULT 0, observed INTEGER NOT NULL DEFAULT 0,
+                reviewed INTEGER NOT NULL DEFAULT 0);
             CREATE TABLE IF NOT EXISTS gaps (
                 session TEXT, first INTEGER, last INTEGER, PRIMARY KEY(session, first, last));
             CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT);
         ''')
+        columns = {row[1] for row in connection.execute('PRAGMA table_info(sessions)')}
+        if 'reviewed' not in columns:
+            connection.execute('ALTER TABLE sessions ADD COLUMN reviewed INTEGER NOT NULL DEFAULT 0')
+            connection.commit()
         return connection
 
     def sync(self, endpoint):
@@ -39,7 +44,8 @@ class RecordStore:
             connection = self.connect(endpoint)
             try:
                 with connection:
-                    connection.execute('INSERT OR IGNORE INTO sessions(session) VALUES (?)', (session,))
+                    connection.execute('INSERT OR IGNORE INTO sessions(session,reviewed) VALUES (?,1)', (session,))
+                    connection.execute('UPDATE sessions SET reviewed=1 WHERE session=?', (session,))
                     connection.execute("INSERT OR REPLACE INTO metadata VALUES ('current_session', ?)", (session,))
                     cursor = connection.execute('SELECT cursor FROM sessions WHERE session=?', (session,)).fetchone()[0]
                     for _ in range(20):
@@ -79,9 +85,13 @@ class RecordStore:
                 current = connection.execute("SELECT value FROM metadata WHERE key='current_session'").fetchone()
                 selected = recording_session or (current[0] if current else None)
                 sessions = [{'session': row[0], 'records': row[1], 'first': row[2], 'last': row[3]}
-                    for row in connection.execute('SELECT session,COUNT(*),MIN(sequence),MAX(sequence) FROM records GROUP BY session ORDER BY MAX(rowid) DESC LIMIT 50')]
+                    for row in connection.execute('SELECT r.session,COUNT(*),MIN(r.sequence),MAX(r.sequence) FROM records r JOIN sessions s ON r.session=s.session WHERE s.reviewed=1 GROUP BY r.session ORDER BY MAX(r.rowid) DESC LIMIT 50')]
                 if not selected:
                     return {'records': [], 'session': None, 'cursor': after, 'missing': True, 'has_more': False, 'available_sessions': sessions}
+                verified = connection.execute('SELECT reviewed FROM sessions WHERE session=?', (selected,)).fetchone()
+                if not verified or verified[0] != 1:
+                    return {'records': [], 'session': selected, 'cursor': after, 'blocked': True, 'has_more': False,
+                            'available_sessions': sessions, 'reason': 'Unverified archive session was not read'}
                 reset = bool(session and session != selected)
                 if reset:
                     after = 0

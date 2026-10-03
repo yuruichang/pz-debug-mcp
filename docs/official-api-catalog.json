@@ -144,7 +144,7 @@
       ],
       "returns": "double",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -155,7 +155,7 @@
       ],
       "returns": "double",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -166,7 +166,7 @@
       ],
       "returns": "double",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -177,7 +177,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -330,7 +330,7 @@
       ],
       "returns": "zombie.characters.animals.IsoAnimal",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -346,7 +346,7 @@
       ],
       "returns": "zombie.characters.animals.IsoAnimal",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -423,7 +423,7 @@
       "parameters": [],
       "returns": "zombie.vehicles.BaseVehicle",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -505,7 +505,7 @@
       ],
       "returns": "zombie.vehicles.BaseVehicle",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "vehicles"
     },
     {
@@ -518,7 +518,7 @@
       ],
       "returns": "zombie.vehicles.BaseVehicle",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "vehicles"
     },
     {
@@ -619,7 +619,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -634,7 +634,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -656,7 +656,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -679,7 +679,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -703,7 +703,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -728,7 +728,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -754,7 +754,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -771,7 +771,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.IsoZombie>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -827,7 +827,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -849,7 +849,7 @@
       ],
       "returns": "java.lang.Boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -860,39 +860,39 @@
       ],
       "returns": "java.util.ArrayList<java.lang.Object>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "canConnect",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "canInviteFriends",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "canModifyPlayerScoreboard",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "canSeePlayerStats",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -913,7 +913,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -923,7 +923,7 @@
       ],
       "returns": "java.lang.Boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -935,7 +935,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -945,7 +945,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -955,7 +955,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -963,7 +963,7 @@
       "parameters": [],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -973,7 +973,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -983,7 +983,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1002,7 +1002,7 @@
       ],
       "returns": "zombie.scripting.objects.Item",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -1054,7 +1054,7 @@
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1064,7 +1064,7 @@
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1075,7 +1075,7 @@
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1091,7 +1091,7 @@
       ],
       "returns": "byte",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1134,7 +1134,7 @@
       ],
       "returns": "byte",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -1148,7 +1148,7 @@
       ],
       "returns": "zombie.scripting.objects.Item",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -1159,7 +1159,7 @@
       ],
       "returns": "zombie.core.textures.Texture",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1170,7 +1170,7 @@
       ],
       "returns": "zombie.iso.objects.IsoDeadBody",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1178,7 +1178,7 @@
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1224,7 +1224,7 @@
       ],
       "returns": "zombie.characters.IsoZombie",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1368,7 +1368,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1508,7 +1508,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1518,7 +1518,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1562,7 +1562,7 @@
       "parameters": [],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1571,16 +1571,16 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getAccessLevel",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1590,32 +1590,32 @@
         "byte"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getActivatedMods",
       "parameters": [],
       "returns": "java.util.List<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getAllAnimalsDefinitions",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.characters.animals.AnimalDefinitions>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getAllBeardStyles",
       "parameters": [],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1624,8 +1624,8 @@
         "zombie.inventory.InventoryItem"
       ],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -1634,16 +1634,16 @@
         "boolean"
       ],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getAllItems",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.scripting.objects.Item>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -1652,8 +1652,8 @@
         "java.lang.String"
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -1662,48 +1662,48 @@
         "boolean"
       ],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getAllRecipes",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.scripting.objects.Recipe>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getAllSavedPlayers",
       "parameters": [],
       "returns": "java.util.List<java.io.BufferedReader>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getAllVehicles",
       "parameters": [],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "vehicles"
     },
     {
       "name": "getAllVoiceStyles",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.core.skinnedmodel.population.VoiceStyle>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getAmbientStreamManager",
       "parameters": [],
       "returns": "zombie.BaseAmbientStreamManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1713,7 +1713,7 @@
       ],
       "returns": "java.util.ArrayList<zombie.characters.animals.AnimalTracks>",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1722,8 +1722,8 @@
         "int"
       ],
       "returns": "zombie.characters.animals.IsoAnimal",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1733,32 +1733,32 @@
         "int"
       ],
       "returns": "zombie.characters.animals.AnimalChunk",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getAnimationViewerState",
       "parameters": [],
       "returns": "zombie.gameStates.AnimationViewerState",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getAttachmentEditorState",
       "parameters": [],
       "returns": "zombie.gameStates.AttachmentEditorState",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getAverageFSP",
       "parameters": [],
       "returns": "java.lang.Double",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1781,32 +1781,32 @@
       "name": "getBaseSoundBank",
       "parameters": [],
       "returns": "zombie.audio.BaseSoundBank",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
       "name": "getBeardStylesInstance",
       "parameters": [],
       "returns": "zombie.core.skinnedmodel.population.BeardStyles",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getBehaviourDebugPlayer",
       "parameters": [],
       "returns": "zombie.characters.IsoGameCharacter",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getBreakModGameVersion",
       "parameters": [],
       "returns": "zombie.core.GameVersion",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -1815,24 +1815,24 @@
         "int"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getCPUTime",
       "parameters": [],
       "returns": "long",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
       "name": "getCPUWait",
       "parameters": [],
       "returns": "long",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1841,32 +1841,32 @@
         "se.krka.kahlua.vm.Coroutine"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
       "name": "getCameraOffX",
       "parameters": [],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getCameraOffY",
       "parameters": [],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getCapabilities",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.characters.Capability>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -1874,71 +1874,71 @@
       "parameters": [],
       "returns": "zombie.iso.IsoCell",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "world"
     },
     {
       "name": "getCellMaxX",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getCellMaxY",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getCellMinX",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getCellMinY",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getCellSizeInChunks",
       "parameters": [],
       "returns": "java.lang.Double",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getCellSizeInSquares",
       "parameters": [],
       "returns": "java.lang.Double",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getCheatTypes",
       "parameters": [],
       "returns": "java.util.List<zombie.characters.CheatType>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getChunkSizeInSquares",
       "parameters": [],
       "returns": "java.lang.Double",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -1949,7 +1949,7 @@
       ],
       "returns": "java.lang.reflect.Field",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
@@ -1960,7 +1960,7 @@
       ],
       "returns": "java.lang.Object",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
@@ -1971,7 +1971,7 @@
       ],
       "returns": "java.lang.reflect.Method",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
@@ -1980,16 +1980,16 @@
         "java.lang.Object"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getClientUsername",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -1997,39 +1997,39 @@
       "parameters": [],
       "returns": "zombie.iso.weather.ClimateManager",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "weather_time"
     },
     {
       "name": "getClimateMoon",
       "parameters": [],
       "returns": "zombie.iso.weather.ClimateMoon",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
       "name": "getCombatConfig",
       "parameters": [],
       "returns": "zombie.combat.CombatConfig",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getConnectedPlayers",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.characters.IsoPlayer>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getContainerOverlays",
       "parameters": [],
       "returns": "zombie.iso.ContainerOverlays",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2039,16 +2039,16 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getControllerCount",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2058,8 +2058,8 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -2068,8 +2068,8 @@
         "int"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2078,8 +2078,8 @@
         "int"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2088,8 +2088,8 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2098,8 +2098,8 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2107,7 +2107,7 @@
       "parameters": [],
       "returns": "zombie.core.Core",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "core_debug"
     },
     {
@@ -2117,8 +2117,8 @@
         "int"
       ],
       "returns": "se.krka.kahlua.vm.LuaCallFrame",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2128,8 +2128,8 @@
         "int"
       ],
       "returns": "java.lang.Object",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2139,8 +2139,8 @@
         "int"
       ],
       "returns": "java.lang.Object",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2149,40 +2149,40 @@
         "se.krka.kahlua.vm.Coroutine"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
       "name": "getCurrentCoroutine",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.Coroutine",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
       "name": "getCurrentSaveName",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getCurrentUserProfileName",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getCurrentUserSteamID",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -2206,15 +2206,15 @@
       "parameters": [],
       "returns": "boolean",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "core_debug"
     },
     {
       "name": "getDebugOptions",
       "parameters": [],
       "returns": "zombie.debug.DebugOptions",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2224,56 +2224,56 @@
         "zombie.iso.IsoObject"
       ],
       "returns": "zombie.iso.IsoDirections",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getEditVehicleState",
       "parameters": [],
       "returns": "zombie.vehicles.EditVehicleState",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "vehicles"
     },
     {
       "name": "getErosion",
       "parameters": [],
       "returns": "zombie.erosion.ErosionMain",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getEvolvedRecipes",
       "parameters": [],
       "returns": "java.util.Stack<zombie.scripting.objects.EvolvedRecipe>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getFMODEventPathList",
       "parameters": [],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getFMODSoundBank",
       "parameters": [],
       "returns": "zombie.audio.BaseSoundBank",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getFakeAttacker",
       "parameters": [],
       "returns": "zombie.characters.IsoGameCharacter",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2282,8 +2282,8 @@
         "java.lang.String"
       ],
       "returns": "java.io.DataInputStream",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2292,8 +2292,8 @@
         "java.lang.String"
       ],
       "returns": "java.io.DataOutputStream",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2304,15 +2304,15 @@
       ],
       "returns": "java.io.BufferedReader",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getFileSeparator",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2324,7 +2324,7 @@
       ],
       "returns": "zombie.Lua.LuaManager$GlobalObject$LuaFileWriter",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2333,8 +2333,8 @@
         "se.krka.kahlua.vm.LuaCallFrame"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2343,8 +2343,8 @@
         "se.krka.kahlua.vm.LuaClosure"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2353,24 +2353,24 @@
         "se.krka.kahlua.vm.LuaClosure"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
       "name": "getFriendsList",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getFullSaveDirectoryTable",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2379,32 +2379,32 @@
         "java.lang.String"
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getGPUTime",
       "parameters": [],
       "returns": "long",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
       "name": "getGPUWait",
       "parameters": [],
       "returns": "long",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getGameClient",
       "parameters": [],
       "returns": "zombie.network.GameClient",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -2413,8 +2413,8 @@
         "java.lang.String"
       ],
       "returns": "java.io.DataInputStream",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2423,32 +2423,32 @@
         "java.lang.String"
       ],
       "returns": "java.io.BufferedReader",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getGameLocal",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getGameRemote",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getGameSpeed",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2456,31 +2456,31 @@
       "parameters": [],
       "returns": "zombie.GameTime",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "weather_time"
     },
     {
       "name": "getGameVersion",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getGametimeTimestamp",
       "parameters": [],
       "returns": "long",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
       "name": "getHairStylesInstance",
       "parameters": [],
       "returns": "zombie.core.skinnedmodel.population.HairStyles",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2489,16 +2489,16 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getHourMinute",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2509,8 +2509,8 @@
         "int"
       ],
       "returns": "zombie.iso.objects.IsoHutch",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2519,24 +2519,24 @@
         "int"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getIsoEntitiesDebug",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.entity.GameEntity>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getIsoMarkers",
       "parameters": [],
       "returns": "zombie.iso.IsoMarkers",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2545,8 +2545,8 @@
         "java.lang.String"
       ],
       "returns": "zombie.scripting.objects.Item",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2555,8 +2555,8 @@
         "java.lang.String"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2565,8 +2565,8 @@
         "java.lang.String"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2575,8 +2575,8 @@
         "java.lang.String"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2585,8 +2585,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2595,8 +2595,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2605,8 +2605,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2615,8 +2615,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2625,8 +2625,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2635,8 +2635,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2645,8 +2645,8 @@
         "java.lang.String"
       ],
       "returns": "zombie.core.textures.Texture",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2655,8 +2655,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2665,8 +2665,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2675,8 +2675,8 @@
         "byte"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2685,8 +2685,8 @@
         "java.lang.String"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -2695,8 +2695,8 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2705,8 +2705,8 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2715,8 +2715,8 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2725,8 +2725,8 @@
         "int"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2735,8 +2735,8 @@
         "java.lang.String"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2745,8 +2745,8 @@
         "int"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2755,32 +2755,32 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
       "name": "getLastStandPlayerFileNames",
       "parameters": [],
       "returns": "java.util.List<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getLastStandPlayersDirectory",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getLatestSave",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2789,8 +2789,8 @@
         "se.krka.kahlua.vm.LuaCallFrame"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2799,16 +2799,16 @@
         "int"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getLoadedLuaCount",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -2817,8 +2817,8 @@
         "se.krka.kahlua.vm.Coroutine"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2827,8 +2827,8 @@
         "se.krka.kahlua.vm.LuaCallFrame"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2838,8 +2838,8 @@
         "int"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2849,8 +2849,8 @@
         "int"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2860,8 +2860,8 @@
         "int"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2871,8 +2871,8 @@
         "int"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2881,32 +2881,32 @@
         "java.lang.Object"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getLoosingXpValue",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getLotDirectories",
       "parameters": [],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getLuaDebuggerErrorCount",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -2914,31 +2914,31 @@
       "parameters": [],
       "returns": "java.util.ArrayList<java.lang.String>",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
       "name": "getLuaStackTrace",
       "parameters": [],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMPStatus",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMapDirectoryTable",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -2947,8 +2947,8 @@
         "java.lang.String"
       ],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -2957,40 +2957,40 @@
         "java.lang.String"
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getMaxActivePlayers",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getMaxPlayers",
       "parameters": [],
       "returns": "java.lang.Double",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getMaxUsernameLength",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMaximumWorldLevel",
       "parameters": [],
       "returns": "java.lang.Double",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -3001,7 +3001,7 @@
       ],
       "returns": "java.lang.String",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
@@ -3011,31 +3011,31 @@
       ],
       "returns": "int",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
       "name": "getMinUsernameLength",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMinimumWorldLevel",
       "parameters": [],
       "returns": "java.lang.Double",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getModDirectoryTable",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3047,7 +3047,7 @@
       ],
       "returns": "java.io.BufferedReader",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3060,7 +3060,7 @@
       ],
       "returns": "zombie.Lua.LuaManager$GlobalObject$LuaFileWriter",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3069,8 +3069,8 @@
         "java.lang.String"
       ],
       "returns": "zombie.gameStates.ChooseGameInfo$Mod",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3079,80 +3079,80 @@
         "java.lang.String"
       ],
       "returns": "zombie.gameStates.ChooseGameInfo$Mod",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getMods",
       "parameters": [],
       "returns": "java.util.List<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getMouseX",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMouseXScaled",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMouseY",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMouseYScaled",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getMyDocumentFolder",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getNetworkLocal",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getNetworkRemote",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getNumActivePlayers",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3162,7 +3162,7 @@
       ],
       "returns": "int",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
@@ -3172,47 +3172,47 @@
       ],
       "returns": "int",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "lua_debug"
     },
     {
       "name": "getOnlinePlayers",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.characters.IsoPlayer>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getOnlineUsername",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getPerformance",
       "parameters": [],
       "returns": "zombie.core.PerformanceSettings",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getPerformanceLocal",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getPerformanceRemote",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3221,8 +3221,8 @@
         "zombie.characters.IsoPlayer"
       ],
       "returns": "zombie.inventory.InventoryItem",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3230,7 +3230,7 @@
       "parameters": [],
       "returns": "zombie.characters.IsoPlayer",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "players"
     },
     {
@@ -3239,8 +3239,8 @@
         "int"
       ],
       "returns": "zombie.characters.IsoPlayer",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3249,8 +3249,8 @@
         "java.lang.String"
       ],
       "returns": "zombie.characters.IsoPlayer",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3259,8 +3259,8 @@
         "zombie.characters.IsoPlayer"
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3269,8 +3269,8 @@
         "int"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3279,8 +3279,8 @@
         "int"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3289,8 +3289,8 @@
         "int"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3299,32 +3299,32 @@
         "int"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
       "name": "getPublicServersList",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getPuddlesManager",
       "parameters": [],
       "returns": "zombie.iso.IsoPuddles",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getRadioAPI",
       "parameters": [],
       "returns": "zombie.radio.RadioAPI",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3332,7 +3332,7 @@
       "parameters": [],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3341,64 +3341,64 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getReconnectCountdownTimer",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
       "name": "getRemotePlayModeActive",
       "parameters": [],
       "returns": "java.lang.Boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getRenderer",
       "parameters": [],
       "returns": "zombie.core.SpriteRenderer",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
       "name": "getRoles",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.characters.Role>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getSLSoundManager",
       "parameters": [],
       "returns": "zombie.radio.StorySounds.SLSoundManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
       "name": "getSandboxOptions",
       "parameters": [],
       "returns": "zombie.SandboxOptions",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getSandboxPresets",
       "parameters": [],
       "returns": "java.util.List<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3407,16 +3407,16 @@
         "java.lang.String"
       ],
       "returns": "java.util.ArrayList<java.io.File>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getSaveDirectoryTable",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3425,8 +3425,8 @@
         "java.lang.String"
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3435,72 +3435,72 @@
         "java.io.File"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getScriptManager",
       "parameters": [],
       "returns": "zombie.scripting.ScriptManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getSeamEditorState",
       "parameters": [],
       "returns": "zombie.gameStates.SeamEditorState",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getSearchMode",
       "parameters": [],
       "returns": "zombie.iso.SearchMode",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getServerAddressFromArgs",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerFPS",
       "parameters": [],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerIP",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerList",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerListFile",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -3515,32 +3515,32 @@
       "name": "getServerName",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerOptions",
       "parameters": [],
       "returns": "zombie.network.ServerOptions",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerPasswordFromArgs",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerPort",
       "parameters": [],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -3549,24 +3549,24 @@
         "java.lang.String"
       ],
       "returns": "int",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getServerSettingsManager",
       "parameters": [],
       "returns": "zombie.network.ServerSettingsManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getServerSpawnRegions",
       "parameters": [],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -3575,24 +3575,24 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getSleepingEvent",
       "parameters": [],
       "returns": "zombie.ai.sadisticAIDirector.SleepingEvent",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getSoundManager",
       "parameters": [],
       "returns": "zombie.BaseSoundManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -3601,8 +3601,8 @@
         "int"
       ],
       "returns": "zombie.characters.IsoPlayer",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -3611,8 +3611,8 @@
         "java.lang.String"
       ],
       "returns": "zombie.iso.sprite.IsoSprite",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -3621,16 +3621,16 @@
         "java.lang.String"
       ],
       "returns": "zombie.iso.sprite.IsoSpriteManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getSpriteModelEditorState",
       "parameters": [],
       "returns": "zombie.gameStates.SpriteModelEditorState",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3641,8 +3641,8 @@
         "double"
       ],
       "returns": "zombie.iso.IsoGridSquare",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -3651,8 +3651,8 @@
         "java.lang.String"
       ],
       "returns": "zombie.core.textures.Texture",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -3661,8 +3661,8 @@
         "java.lang.String"
       ],
       "returns": "zombie.core.textures.Texture",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -3671,16 +3671,16 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getSteamModeActive",
       "parameters": [],
       "returns": "java.lang.Boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3689,8 +3689,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -3699,24 +3699,24 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getSteamScoreboard",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "getSteamWorkshopItemIDs",
       "parameters": [],
       "returns": "java.util.ArrayList<java.lang.String>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3725,24 +3725,24 @@
         "java.lang.String"
       ],
       "returns": "java.util.ArrayList<zombie.gameStates.ChooseGameInfo$Mod>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getSteamWorkshopStagedItems",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.core.znet.SteamWorkshopItem>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
       "name": "getStreamModeActive",
       "parameters": [],
       "returns": "java.lang.Boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -3751,8 +3751,8 @@
         "zombie.worldMap.streets.WorldMapStreets"
       ],
       "returns": "java.util.List<zombie.worldMap.streets.WorldMapStreet>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3762,16 +3762,16 @@
         "java.lang.Object..."
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getTextManager",
       "parameters": [],
       "returns": "zombie.ui.TextManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3780,8 +3780,8 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3791,8 +3791,8 @@
         "java.lang.Object..."
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3802,7 +3802,7 @@
       ],
       "returns": "zombie.core.textures.Texture",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -3813,7 +3813,7 @@
       ],
       "returns": "zombie.core.textures.Texture",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -3830,24 +3830,24 @@
       "name": "getTileGeometryState",
       "parameters": [],
       "returns": "zombie.gameStates.TileGeometryState",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getTileOverlays",
       "parameters": [],
       "returns": "zombie.iso.TileOverlays",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getTimeInMillis",
       "parameters": [],
       "returns": "long",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
@@ -3865,8 +3865,8 @@
       "name": "getTimestamp",
       "parameters": [],
       "returns": "long",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
@@ -3874,7 +3874,7 @@
       "parameters": [],
       "returns": "long",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "weather_time"
     },
     {
@@ -3883,16 +3883,16 @@
         "java.lang.String"
       ],
       "returns": "java.lang.String",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getUsers",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.characters.NetworkUser>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3901,8 +3901,8 @@
         "int"
       ],
       "returns": "zombie.vehicles.BaseVehicle",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "vehicles"
     },
     {
@@ -3911,8 +3911,8 @@
         "zombie.vehicles.BaseVehicle"
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "vehicles"
     },
     {
@@ -3923,8 +3923,8 @@
         "int"
       ],
       "returns": "zombie.iso.zones.VehicleZone",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -3935,32 +3935,32 @@
         "int"
       ],
       "returns": "zombie.core.textures.VideoTexture",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getVoiceStylesInstance",
       "parameters": [],
       "returns": "zombie.core.skinnedmodel.population.VoiceStyles",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getWarNearest",
       "parameters": [],
       "returns": "zombie.network.WarManager$War",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getWars",
       "parameters": [],
       "returns": "java.util.ArrayList<zombie.network.WarManager$War>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -3968,23 +3968,23 @@
       "parameters": [],
       "returns": "zombie.iso.IsoWorld",
       "readable": true,
-      "policy": "getter_convention",
+      "policy": "reviewed_read_only",
       "category": "world"
     },
     {
       "name": "getWorldMarkers",
       "parameters": [],
       "returns": "zombie.iso.WorldMarkers",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
       "name": "getWorldSoundManager",
       "parameters": [],
       "returns": "zombie.WorldSoundManager",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -3993,16 +3993,16 @@
         "zombie.characters.IsoZombie"
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "getZomboidRadio",
       "parameters": [],
       "returns": "zombie.radio.ZomboidRadio",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4013,8 +4013,8 @@
         "int"
       ],
       "returns": "zombie.iso.zones.Zone",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -4025,8 +4025,8 @@
         "int"
       ],
       "returns": "java.util.ArrayList<zombie.iso.zones.Zone>",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -4036,8 +4036,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -4048,7 +4048,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -4059,7 +4059,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "stateful_or_factory_reader",
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -4069,8 +4069,8 @@
         "zombie.scripting.objects.ItemTag"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4080,7 +4080,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4098,7 +4098,7 @@
       ],
       "returns": "zombie.inventory.InventoryItem",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4109,7 +4109,7 @@
       ],
       "returns": "zombie.inventory.InventoryItem",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4119,7 +4119,7 @@
       ],
       "returns": "zombie.inventory.InventoryItem",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4129,7 +4129,7 @@
       ],
       "returns": "zombie.inventory.InventoryItem",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4140,7 +4140,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4167,8 +4167,8 @@
         "java.lang.String"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4178,8 +4178,8 @@
         "byte"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4189,40 +4189,40 @@
         "byte"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isAdmin",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isAltKeyDown",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isAnimationRecorderActive",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isClient",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -4231,24 +4231,24 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isCoopHost",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isCtrlKeyDown",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4258,56 +4258,56 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isDebugEnabled",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isDemo",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isDesktopOpenSupported",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isFloatingGamepadTextInputVisible",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isGamePaused",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isIngameState",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4316,8 +4316,8 @@
         "java.lang.String"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4327,8 +4327,8 @@
         "float"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4341,8 +4341,8 @@
         "zombie.characters.IsoPlayer"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4351,8 +4351,8 @@
         "byte"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4361,8 +4361,8 @@
         "byte"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4371,8 +4371,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4381,8 +4381,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4391,8 +4391,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4401,8 +4401,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4411,8 +4411,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4421,8 +4421,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4431,8 +4431,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4441,8 +4441,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4451,8 +4451,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4461,8 +4461,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4471,8 +4471,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4481,8 +4481,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4491,8 +4491,8 @@
         "java.lang.String"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4501,8 +4501,8 @@
         "zombie.input.KeybindId"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4511,8 +4511,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4521,8 +4521,8 @@
         "java.lang.String"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4531,16 +4531,16 @@
         "zombie.input.KeybindId"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isMetaKeyDown",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4549,8 +4549,8 @@
         "zombie.gameStates.ChooseGameInfo$Mod"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4559,8 +4559,8 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4569,16 +4569,16 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isMultiplayer",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "players"
     },
     {
@@ -4587,64 +4587,64 @@
         "int"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isPublicServerListAllowed",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "isQuitCooldown",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isServer",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "isServerSoftReset",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "isShiftKeyDown",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isShowConnectionInfo",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "isShowServerInfo",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -4653,56 +4653,56 @@
         "java.lang.Object"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
       "name": "isSteamOverlayEnabled",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "isSteamRunningOnSteamDeck",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "isSteamServerBrowserEnabled",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
       "name": "isSystemLinux",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isSystemMacOS",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isSystemWindows",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "weather_time"
     },
     {
@@ -4712,8 +4712,8 @@
         "java.lang.String"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4722,8 +4722,8 @@
         "java.lang.String"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -4732,24 +4732,24 @@
         "java.lang.String"
       ],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isXBOXController",
       "parameters": [],
       "returns": "boolean",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
       "name": "isoRegionsRenderer",
       "parameters": [],
       "returns": "zombie.iso.areas.isoregion.IsoRegionsRenderer",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -4761,8 +4761,8 @@
         "float"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -4774,8 +4774,8 @@
         "float"
       ],
       "returns": "float",
-      "readable": true,
-      "policy": "getter_convention",
+      "readable": false,
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -4786,7 +4786,7 @@
       ],
       "returns": "java.lang.Object",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4794,7 +4794,7 @@
       "parameters": [],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4805,7 +4805,7 @@
       ],
       "returns": "java.util.ArrayList<java.lang.String>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4815,7 +4815,7 @@
       ],
       "returns": "java.util.ArrayList<java.lang.String>",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4827,7 +4827,7 @@
       ],
       "returns": "zombie.core.skinnedmodel.model.Model",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4839,7 +4839,7 @@
       ],
       "returns": "zombie.core.skinnedmodel.model.Model",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4851,7 +4851,7 @@
       ],
       "returns": "zombie.core.skinnedmodel.model.Model",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "vehicles"
     },
     {
@@ -4865,7 +4865,7 @@
       ],
       "returns": "zombie.core.skinnedmodel.model.Model",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -4876,7 +4876,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "lua_debug"
     },
     {
@@ -4916,7 +4916,7 @@
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -4927,7 +4927,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -5003,7 +5003,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -5043,7 +5043,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -5094,7 +5094,7 @@
       "parameters": [],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -5174,7 +5174,7 @@
       ],
       "returns": "java.lang.Object",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -5204,7 +5204,7 @@
       ],
       "returns": "java.lang.Object",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -5326,7 +5326,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -5426,7 +5426,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -5492,7 +5492,7 @@
       ],
       "returns": "java.lang.Object",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -5544,7 +5544,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -5601,7 +5601,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -5614,7 +5614,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -6088,7 +6088,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -6531,7 +6531,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -6906,7 +6906,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -6920,7 +6920,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -6995,7 +6995,7 @@
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7021,7 +7021,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "items_scripts"
     },
     {
@@ -7032,7 +7032,7 @@
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7045,7 +7045,7 @@
       ],
       "returns": "byte",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7055,7 +7055,7 @@
       ],
       "returns": "zombie.network.Server",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -7071,7 +7071,7 @@
       "parameters": [],
       "returns": "int",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -7090,7 +7090,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -7101,7 +7101,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "network"
     },
     {
@@ -7242,7 +7242,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7331,7 +7331,7 @@
       ],
       "returns": "int",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7437,7 +7437,7 @@
       ],
       "returns": "se.krka.kahlua.vm.KahluaTable",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7450,7 +7450,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -7463,7 +7463,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -7476,7 +7476,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -7489,7 +7489,7 @@
       ],
       "returns": "float",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "world"
     },
     {
@@ -7572,7 +7572,7 @@
       ],
       "returns": "zombie.core.textures.Texture",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -7582,7 +7582,7 @@
       ],
       "returns": "java.lang.String",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7663,7 +7663,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7673,7 +7673,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7683,7 +7683,7 @@
       ],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7691,7 +7691,7 @@
       "parameters": [],
       "returns": "boolean",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "core_debug"
     },
     {
@@ -7721,7 +7721,7 @@
       "parameters": [],
       "returns": "zombie.popman.ZombiePopulationRenderer",
       "readable": false,
-      "policy": "not_a_reader",
+      "policy": "unreviewed_interface",
       "category": "audio_visual"
     },
     {
@@ -7748,8 +7748,8 @@
     }
   ],
   "rules": {
-    "readers_use_getter_convention": true,
-    "factories_and_mutators_excluded": true
+    "explicit_reviewed_allowlist": true,
+    "unreviewed_interfaces_disabled": true
   },
   "type_count": 1152
 }

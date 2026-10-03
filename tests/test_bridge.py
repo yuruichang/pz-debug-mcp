@@ -292,7 +292,7 @@ class FileTests(unittest.TestCase):
                     self.assertTrue(status_data['online'])
                     self.assertTrue(status_data['live']['focus_pause']['disabled'])
                     catalog = await session.call_tool('pz_list_debug_interfaces', {'readers_only': True})
-                    self.assertGreater(json.loads(catalog.content[0].text)['total'], 300)
+                    self.assertEqual(json.loads(catalog.content[0].text)['total'], 16)
                     player = await session.call_tool('pz_query_debug', {'target': 'getPlayer'})
                     player_handle = json.loads(player.content[0].text)['data']['value']['handle']
                     health = await session.call_tool('pz_query_debug', {'target': player_handle, 'member': 'getHealth'})

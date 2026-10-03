@@ -129,7 +129,7 @@ local function names(registry, kind)
 end
 
 handlers.status = function()
-    return { protocol = 1, version = '0.2.0', game_version = getCore():getVersionNumber(),
+    return { protocol = 1, version = '0.2.1', game_version = getCore():getVersionNumber(),
         session = B.session, endpoint = B.endpoint, timestamp_ms = now(), debug_enabled = isDebug(),
         mode = isServer() and 'server' or (isClient() and 'multiplayer_client' or 'singleplayer'),
         capabilities = { inspect_vehicle = true, vehicle_trace = true, run_test = true,
@@ -159,6 +159,7 @@ local function collectErrors()
 end
 
 handlers.read_errors = function(args)
+    collectErrors()
     local reset = args.session and args.session ~= J.null and args.session ~= B.session or false
     local after = reset and 0 or integer(args.after, 0, 0, 2147483647)
     local limit = integer(args.limit, 50, 1, 100)
@@ -369,16 +370,16 @@ function B.start(endpoint)
                 B.lastHeartbeat = timestamp
                 B.focusPause = Focus.apply(B.endpoint)
                 jsonWrite('heartbeat.json', { protocol = 1, session = B.session, endpoint = B.endpoint,
-                    timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.2.0',
+                    timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.2.1',
                     focus_pause = B.focusPause, game_version = getCore():getVersionNumber() })
+            end
+            if timestamp - B.lastPoll >= 100 then
+                B.lastPoll = timestamp
+                poll()
+                if isDebug() then collectErrors() end
             end
             if isDebug() then sampleTraces(timestamp) end
             Data.tick(timestamp, isDebug())
-            if timestamp - B.lastPoll >= 100 then
-                B.lastPoll = timestamp
-                if isDebug() then collectErrors() end
-                poll()
-            end
         end)
         if not ok and timestamp - (B.lastFailure or 0) >= 1000 then
             B.lastFailure = timestamp

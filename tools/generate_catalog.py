@@ -8,15 +8,17 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
+REVIEWED = json.loads((ROOT / 'docs/reviewed-readers.json').read_text(encoding='utf-8'))
 DENIED = re.compile(r'^(get(?:Next|New|Free|OrCreate|OrSet|OrDefault|And|Random|FileReader|FileWriter|ModFileReader|ModFileWriter|SandboxFile|Texture|SoundBuffer|SteamWorkshopStaging)|hasDataBreakpoint|hasDataReadBreakpoint)')
 
 
-def policy(name, result):
-    if result == 'void' or not re.match(r'^(get|is|has|can|contains|size$|length$|keySet$|values$|entrySet$)', name):
+def policy(name, result, owner=None, args=None):
+    if result == 'void':
         return False, 'not_a_reader'
-    if DENIED.search(name):
-        return False, 'stateful_or_factory_reader'
-    return True, 'getter_convention'
+    entries = REVIEWED['globals'] if owner is None else REVIEWED['methods'].get(owner, {})
+    if (args or []) in entries.get(name, []):
+        return True, 'reviewed_read_only'
+    return False, 'unreviewed_interface'
 
 
 def group(name):
@@ -69,12 +71,12 @@ def main():
         if not match:
             continue
         result, name, args = match.groups()
-        readable, reason = policy(name, result)
+        readable, reason = policy(name, result, args=parameters(args))
         entries.append({'name': name, 'parameters': parameters(args), 'returns': result,
                         'readable': readable, 'policy': reason, 'category': group(name)})
     entries.sort(key=lambda entry: (entry['name'], entry['parameters']))
     payload = {'schema': 1, 'target_build': '42.21.0', 'game_jar_sha256': hashlib.sha256(jar.read_bytes()).hexdigest(),
-               'globals': entries, 'rules': {'readers_use_getter_convention': True, 'factories_and_mutators_excluded': True}}
+               'globals': entries, 'rules': {'explicit_reviewed_allowlist': True, 'unreviewed_interfaces_disabled': True}}
     exposed = subprocess.check_output(['javap', '-c', '-private', '-classpath', str(jar), 'zombie.Lua.LuaManager$Exposer'], text=True, encoding='utf-8')
     names = set(re.findall(r'// class ([\w/$]+)', exposed))
     names.update({'java/lang/Object', 'java/util/List', 'java/util/ArrayList', 'java/util/Map', 'java/util/Collection'})
@@ -86,9 +88,9 @@ def main():
     subprocess.run([str(options.game_dir / 'jre64/bin/java.exe'), '-cp', f'{build};{jar};{options.game_dir}',
                     'ExtractTypes', str(build / 'types.txt'), str(build / 'types.json')], check=True, cwd=options.game_dir)
     types = json.loads((build / 'types.json').read_text(encoding='utf-8'))
-    for entry in types.values():
+    for owner, entry in types.items():
         for method in entry['methods']:
-            method['readable'], method['policy'] = policy(method['name'], method['returns'])
+            method['readable'], method['policy'] = policy(method['name'], method['returns'], owner, method['parameters'])
     type_root = ROOT / 'Contents/mods/PZDebugMCP/42/media/lua/shared/PZDebugMCP/Types'
     type_root.mkdir(parents=True, exist_ok=True)
     # Small chunks avoid the Lua/Kahlua function constant limit.
