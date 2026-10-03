@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import sqlite3
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -11,6 +13,7 @@ from mcp.server.fastmcp.exceptions import ToolError
 from pydantic import Field
 
 from .bridge import Bridge, BridgeError
+from .record_store import RecordStore
 
 Endpoint = Literal["client", "server"]
 VehicleId = Annotated[int, Field(ge=-32768, le=32767)]
@@ -18,7 +21,32 @@ Limit = Annotated[int, Field(ge=1, le=100)]
 
 
 def create_server(bridge: Bridge) -> FastMCP:
-    mcp = FastMCP("PZ Debug MCP", instructions=(
+    store = RecordStore(bridge)
+
+    @asynccontextmanager
+    async def lifespan(_server):
+        stop = asyncio.Event()
+
+        async def archive():
+            while not stop.is_set():
+                try:
+                    await asyncio.to_thread(store.sync_all)
+                except (OSError, ValueError, RuntimeError, sqlite3.Error) as error:
+                    import logging
+                    logging.getLogger(__name__).warning('Recording archive: %s', error)
+                try:
+                    await asyncio.wait_for(stop.wait(), 0.5)
+                except TimeoutError:
+                    pass
+
+        task = asyncio.create_task(archive())
+        try:
+            yield {}
+        finally:
+            stop.set()
+            await task
+
+    mcp = FastMCP("PZ Debug MCP", lifespan=lifespan, instructions=(
         "先查询 pz_status，确认执行端和 debug_enabled。仅调用已注册的有限操作。"
         "TIMEOUT/INDETERMINATE 不代表取消，不可自动重试修改操作。"
         "采样 start 返回 trace_id，再用 read/stop 读取；断点与 JVM 暂停可能让桥接失去响应。"))
@@ -74,6 +102,57 @@ def create_server(bridge: Bridge) -> FastMCP:
     async def pz_reload_mod_lua(module: str, endpoint: Endpoint = "client") -> dict:
         """仅重载游戏内预注册模块，依次 cleanup → 原版 reloadLuaFile → init。失败时模块被停用。"""
         return await request(endpoint, "reload_mod_lua", {"module": module})
+
+    @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
+    async def pz_list_debug_interfaces(scope: Literal["globals", "object"] = "globals", handle: str | None = None,
+                                       category: str | None = None, readers_only: bool = False,
+                                       offset: Annotated[int, Field(ge=0)] = 0, limit: Limit = 50,
+                                       endpoint: Endpoint = "client") -> dict:
+        """分页浏览原版全部全局 API 签名或对象的字段/方法；标明可读、需要参数和当前执行端可用性。"""
+        return await request(endpoint, "list_debug_interfaces", {"scope": scope, "handle": handle,
+            "category": category, "readers_only": readers_only, "offset": offset, "limit": limit})
+
+    @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
+    async def pz_query_debug(target: str, action: Literal["call", "inspect", "field", "table"] = "call",
+                             member: str | int | bool | None = None, arguments: list | None = None,
+                             field_index: Annotated[int, Field(ge=0)] | None = None,
+                             offset: Annotated[int, Field(ge=0)] = 0, limit: Limit = 32,
+                             endpoint: Endpoint = "client") -> dict:
+        """通用原版数据查询。target 为全局 API 名、root:_G 等表根或对象句柄。对象参数使用 {handle:句柄}；查询结果自动记录。"""
+        return await request(endpoint, "query_debug", {"target": target, "action": action, "member": member,
+            "arguments": arguments or [], "field_index": field_index, "offset": offset, "limit": limit})
+
+    @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
+    async def pz_read_recorded_data(after: Annotated[int, Field(ge=0)] = 0, limit: Limit = 50,
+                                    target: str | None = None, kind: Literal["global", "object", "query"] | None = None,
+                                    session: str | None = None, recording_session: str | None = None,
+                                    endpoint: Endpoint = "client") -> dict:
+        """取回自动归档的全程记录；支持离线、历史会话、目标过滤和分页。available_sessions 列出已归档会话，gaps 标明桥接覆盖。"""
+        return await asyncio.to_thread(store.read, endpoint, after, limit, target, kind, session, recording_session)
+
+    @mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False, "openWorldHint": False})
+    async def pz_configure_recorder(enabled: bool | None = None,
+                                     interval_ms: Annotated[int, Field(ge=50, le=5000)] | None = None,
+                                     jobs_per_tick: Annotated[int, Field(ge=1, le=32)] | None = None,
+                                     budget_ms: Annotated[int, Field(ge=1, le=20)] | None = None,
+                                     max_depth: Annotated[int, Field(ge=0, le=16)] | None = None,
+                                     max_handles: Annotated[int, Field(ge=128, le=16384)] | None = None,
+                                     max_jobs: Annotated[int, Field(ge=128, le=32768)] | None = None,
+                                     refresh_seconds: Annotated[int, Field(ge=1, le=300)] | None = None,
+                                     endpoint: Endpoint = "client") -> dict:
+        """配置通用记录的轮询、预算和对象图范围；max_handles 改变时旧句柄失效。默认自动开始，不需要 AI 逐次请求。"""
+        return await request(endpoint, "configure_recorder", {"enabled": enabled, "interval_ms": interval_ms,
+            "jobs_per_tick": jobs_per_tick, "budget_ms": budget_ms, "max_depth": max_depth,
+            "max_handles": max_handles, "max_jobs": max_jobs, "refresh_seconds": refresh_seconds})
+
+    @mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False})
+    async def pz_watch_debug(action: Literal["add", "list", "remove"] = "add", query: dict | None = None,
+                             watch_id: str | None = None,
+                             interval_ms: Annotated[int, Field(ge=100, le=60000)] = 1000,
+                             endpoint: Endpoint = "client") -> dict:
+        """给需要参数的通用查询注册游戏侧持续采集，不需 AI 反复调用；list/remove 管理当前会话订阅。"""
+        return await request(endpoint, "watch_debug", {"action": action, "query": query,
+            "watch_id": watch_id, "interval_ms": interval_ms})
 
     @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
     async def pz_read_console(cursor: dict | None = None,

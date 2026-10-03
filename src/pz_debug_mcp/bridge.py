@@ -180,3 +180,59 @@ class Bridge:
                         "has_more": stream.tell() < stat.st_size}
         except FileNotFoundError:
             return {"text": "", "cursor": None, "missing": True}
+
+    def recorded(self, endpoint: str, after: int = 0, limit: int = 50,
+                 target: str | None = None, kind: str | None = None, session: str | None = None) -> dict:
+        """Read only committed records from fixed local segments, even with the game offline."""
+        directory = self.directory(endpoint) / "records"
+        index = read_json(directory / "index.json")
+        if not index or index.get("schema") != 1:
+            return {"records": [], "cursor": after, "missing": True, "session": None, "has_more": False}
+        current = index.get("session")
+        reset = bool(session and session != current)
+        if reset:
+            after = 0
+        records = {}
+        warnings = []
+        for segment in index.get("segments", []):
+            slot = segment.get("slot")
+            if type(slot) is not int or not 1 <= slot <= 16:
+                continue
+            try:
+                with (directory / f"segment-{slot:02}.log").open("rb") as stream:
+                    payload = stream.read(MAX_BYTES + 1)
+                if len(payload) > MAX_BYTES:
+                    warnings.append(f"segment-{slot:02}: exceeds size limit")
+                    continue
+                for line in payload.splitlines(keepends=True):
+                    if not line.endswith(b"\n"):
+                        continue
+                    try:
+                        record = json.loads(line)
+                    except (ValueError, UnicodeError):
+                        continue
+                    if not isinstance(record, dict):
+                        continue
+                    sequence = record.get("sequence")
+                    if (record.get("session") == current and type(sequence) is int
+                            and max(after + 1, index.get("first", 1)) <= sequence <= index.get("last", 0)):
+                        records[sequence] = record
+            except OSError as error:
+                warnings.append(f"segment-{slot:02}: {type(error).__name__}")
+        selected, cursor, bytes_used = [], after, 0
+        exhausted = True
+        for sequence, record in sorted(records.items()):
+            matches = (not target or target in record.get("target", "")) and (not kind or kind == record.get("kind"))
+            size = len(json.dumps(record, ensure_ascii=False).encode("utf-8"))
+            if matches and (len(selected) >= limit or bytes_used + size > 1048576):
+                exhausted = False
+                break
+            cursor = sequence
+            if matches:
+                selected.append(record)
+                bytes_used += size
+        if exhausted and not warnings:
+            cursor = max(cursor, index.get("last", 0))
+        return {"records": selected, "cursor": cursor, "session": current, "reset": reset,
+                "gap": after < index.get("first", 1) - 1, "has_more": cursor < index.get("last", 0),
+                "committed_through": index.get("last", 0), "recorder": index.get("recorder"), "warnings": warnings}

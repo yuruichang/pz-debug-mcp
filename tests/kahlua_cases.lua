@@ -6,6 +6,14 @@ pauseOnFocusloss = true
 clock = clock + 1000; B.tick()
 assert(not pauseOnFocusloss)
 assert(request('status').result.debug_enabled)
+local playerHandle = request('query_debug', { target = 'getPlayer' }).result.data.value.handle
+assert(request('query_debug', { target = playerHandle, member = 'getHealth' }).result.data.value == 75)
+local climateHandle = request('query_debug', { target = 'getClimateManager' }).result.data.value.handle
+assert(request('query_debug', { target = climateHandle, member = 'getTemperature' }).result.data.value == 17.5)
+assert(request('list_debug_interfaces').result.total == 764)
+assert(request('query_debug', { target = 'getFileWriter' }).error.code == 'NOT_A_READER')
+assert(request('query_debug', { target = 'getNumClassFields', arguments = B.Json.array({ { handle = playerHandle } }) }).result.data.value == 1)
+assert(B.Data.state.lastError == nil)
 assert(request('run_test', { name = 'bridge_self_test' }).result.result.passed)
 local vehicle = request('inspect_vehicle', { vehicle_id = 1, include_parts = true }).result.vehicle
 assert(vehicle.id == 1 and vehicle.towing_id == 2 and vehicle.parts[1].condition == 80)

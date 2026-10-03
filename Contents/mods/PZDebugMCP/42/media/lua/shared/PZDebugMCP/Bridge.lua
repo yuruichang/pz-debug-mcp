@@ -1,6 +1,7 @@
 if PZDebugMCP then return PZDebugMCP end
 local J = require 'PZDebugMCP/Json'
 local Focus = require 'PZDebugMCP/Focus'
+local Data = require 'PZDebugMCP/Data'
 local B = { Json = J, tests = {}, modules = {}, traces = {}, events = {}, sequence = 0 }
 PZDebugMCP = B
 local handlers = {}
@@ -23,13 +24,14 @@ local function read(name)
     if not ok or not line or #line > 524288 then return nil end
     return line
 end
-local function write(name, text)
-    local writer = getFileWriter(B.path .. name, true, false)
+local function writeRaw(name, text, append)
+    local writer = getFileWriter(B.path .. name, true, append == true)
     if not writer then error('Cannot open bridge writer: ' .. name) end
-    local ok, why = pcall(function() writer:write(text .. '\n') end)
+    local ok, why = pcall(function() writer:write(text) end)
     writer:close()
     if not ok then error(why) end
 end
+local function write(name, text) writeRaw(name, text .. '\n', false) end
 local function jsonWrite(name, value) write(name, J.encode(value)) end
 local function safeCall(object, method)
     if not object then return J.null end
@@ -134,8 +136,15 @@ handlers.status = function()
             debug_errors = type(getLuaDebuggerErrors) == 'function', reload_lua = type(reloadLuaFile) == 'function',
             reload_server_lua = type(reloadServerLuaFile) == 'function', arbitrary_lua = false,
             breakpoint_control = false, paused_polling = B.pausedPolling },
-        focus_pause = B.focusPause, tests = names(B.tests, 'test'), modules = names(B.modules, 'module') }
+        focus_pause = B.focusPause, recorder = Data.status(),
+        tests = names(B.tests, 'test'), modules = names(B.modules, 'module') }
 end
+
+handlers.list_debug_interfaces = Data.list
+handlers.query_debug = Data.query
+handlers.configure_recorder = Data.configure
+handlers.watch_debug = Data.watch
+B.Data = Data
 
 local function collectErrors()
     if type(getLuaDebuggerErrors) ~= 'function' then return end
@@ -351,6 +360,7 @@ function B.start(endpoint)
     B.session = string.format('%.0f', now()) .. '-' .. tostring(ZombRand(1000000000))
     B.errorIndex, B.traceSequence, B.lastPoll, B.lastHeartbeat = 0, 0, 0, 0
     B.focusPause = Focus.apply(endpoint)
+    Data.start(B, writeRaw)
     B.pausedPolling = Events.OnTickEvenPaused ~= nil
     local function tick()
         local timestamp = now()
@@ -363,6 +373,7 @@ function B.start(endpoint)
                     focus_pause = B.focusPause, game_version = getCore():getVersionNumber() })
             end
             if isDebug() then sampleTraces(timestamp) end
+            Data.tick(timestamp, isDebug())
             if timestamp - B.lastPoll >= 100 then
                 B.lastPoll = timestamp
                 if isDebug() then collectErrors() end
