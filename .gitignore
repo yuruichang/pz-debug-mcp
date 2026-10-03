@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+dist/
+build/
+*.egg-info/
+mcp-config.*
+dependencies-lock.txt
+recordings/
+*.log
+*.tmp

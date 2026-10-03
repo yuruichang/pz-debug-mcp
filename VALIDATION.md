@@ -1,0 +1,20 @@
+# 验证记录
+
+日期：2026-10-03。目标：本机 Project Zomboid 42.21.0（revision 4a0e9546ec）。
+
+## 通过
+
+- 22 项 Python/Lua 5.1 自动测试，包括真实文件邮箱、多个 MCP 请求并发串行处理、请求过期、离线心跳、未确认结果阻止覆盖、旧序号防重传、完成标记与会话匹配。
+- 标准 MCP Python 客户端通过 stdio 启动实际服务，完成 initialize、tools/list，并调用状态、车辆、测试、错误、采样与重载工具；参数越界和未知测试返回工具错误。
+- 车辆测试覆盖拖挂双向关系、断开标记、部件快照、600 条采样容量、四组上限和淘汰。
+- 生命周期测试覆盖多次重载无重复回调、清理失败、无重新注册与初始化失败时停用。
+- 使用本机游戏的 projectzomboid.jar 与自带 Java 执行 KahluaCheck，验证 Kahlua 编译与协议处理、车辆/拖挂、采样、错误、重载、会话切换与 Unicode 转义。
+- 核对原版字节码：文件接口位于缓存 Lua 子目录且 writer 允许 JSON；VehiclePartOwner 提供 getPartCount/getPartByIndex 默认方法；Mod 文件重载应使用 reloadLuaFile，reloadServerLuaFile 则读取缓存路径。
+
+## 验证边界
+
+游戏对象与事件在自动测试中是测试桩。没有启动用户存档，尚未验证实际游戏内加载、正常暂停下的回调、驾驶时性能和专用服务器联调。B42.20 与 B41 未验证。完整断点/单步及 JDWP 不属于第一版。
+
+## 已安装与下一步
+
+模组安装到 C:/Users/WINDOWS/Zomboid/mods/PZDebugMCP。Python 服务环境准备完成；mcp-config.json 是本机连接配置。用户启用模组并用 -debug 进入测试存档后，可按 README 的验收步骤检查在线心跳、车辆采样和重载。

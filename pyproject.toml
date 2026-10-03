@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pz-debug-mcp"
+version = "0.1.0"
+description = "Project Zomboid Debug Lua bridge and local MCP server"
+requires-python = ">=3.11"
+dependencies = ["mcp==1.30.0"]
+
+[project.scripts]
+pz-debug-mcp = "pz_debug_mcp.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
