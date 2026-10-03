@@ -40,14 +40,23 @@ local function descriptor(value, origin, depth, hint)
         if #value > 4096 then return { kind = 'string', value = value:sub(1, 4096), truncated = true, length = #value } end
         return value
     end
-    local existing = s.reverse[value]
-    if existing and s.handles[existing] then return { kind = kind, handle = existing } end
+    local identityKey = Policy.identityKey(value)
+    local bucket = s.reverse[identityKey] or {}
+    for _, existing in ipairs(bucket) do
+        local entry = s.handles[existing]
+        if entry and rawequal(entry.value, value) then return { kind = kind, handle = existing, class = entry.class } end
+    end
     s.handleSequence = s.handleSequence + 1
     local id = s.session .. ':h' .. tostring(s.handleSequence)
     local slot = (s.handleSequence - 1) % s.config.max_handles + 1
     local old = s.handleSlots[slot]
     if old and s.handles[old] then
-        s.reverse[s.handles[old].value] = nil
+        local oldKey = s.handles[old].identityKey
+        local oldBucket = s.reverse[oldKey]
+        if oldBucket then
+            for i = #oldBucket, 1, -1 do if oldBucket[i] == old then table.remove(oldBucket, i) end end
+            if #oldBucket == 0 then s.reverse[oldKey] = nil end
+        end
         s.handles[old] = nil
         s.handlesEvicted = s.handlesEvicted + 1
     end
@@ -62,9 +71,12 @@ local function descriptor(value, origin, depth, hint)
             className = tostring(getClassFunction(value, 0)):match('%s([%w_.$]+)%.[%w_]+%(') or className
         end
     end
-    local entry = { value = value, origin = origin, depth = depth or 0,
+    local entry = { value = value, origin = origin, depth = depth or 0, identityKey = identityKey,
         class = className }
-    s.handles[id], s.reverse[value] = entry, id
+    s.handles[id] = entry
+    bucket = s.reverse[identityKey] or {}
+    bucket[#bucket + 1] = id
+    s.reverse[identityKey] = bucket
     if entry.depth <= s.config.max_depth and kind == 'table' and rawget(value, '__debugNative') ~= true and origin ~= 'root:_G' then
         enqueue({ handle = id, offset = 0, automatic = true })
     else s.depthLimited = s.depthLimited + 1 end
@@ -190,7 +202,7 @@ local function objectLayout(entry)
         addClass(entry.class)
         if #public > 0 then layout.methodEntries, layout.methods = public, #public end
         local list = safe(function() return instanceof(value, 'List') end)
-        if list then layout.collection = 'list' end
+        if list then layout.collection = 'unreviewed_list' end
     elseif type(value) == 'table' then
         layout.keys = {}
         for key in pairs(value) do
@@ -206,7 +218,8 @@ end
 local function inspect(id, offset, limit, values)
     local entry = handle(id)
     local value, layout = entry.value, objectLayout(entry)
-    local result = { handle = id, origin = entry.origin, offset = offset, items = J.array() }
+    local result = { handle = id, origin = entry.origin, offset = offset, items = J.array(),
+        collection_access = layout.collection == 'unreviewed_list' and 'not_reviewed' or nil }
     if layout.error then result.reflection_error = layout.error end
     local total = layout.keys and #layout.keys or layout.fields + layout.methods
     if layout.collection == 'list' then total = value:size() end
@@ -231,8 +244,10 @@ local function inspect(id, offset, limit, values)
             local info = {}
             if original then for key, child in pairs(original) do info[key] = child end
             else info = methodInfo(value, i - layout.fields) end
-            if values and info.readable and info.available and #info.parameters == 0 then
-                local got, why = safe(function() return Policy.member(value, info.name)(value) end)
+            local callback = info.available and Policy.member(value, info.name) or nil
+            if values and info.readable and callback and #info.parameters == 0
+                and (type(value) ~= 'userdata' or Policy.nativeCallable(callback)) then
+                local got, why = safe(function() return callback(value) end)
                 if why then info.error = why
                 else info.value = descriptor(got, entry.origin .. ':' .. info.name, entry.depth + 1, info.returns) end
             end
@@ -310,6 +325,9 @@ function D.query(args)
             if not selected then reject('NOT_A_READER', 'Method signature is not a public reader with this argument count') end
             local callback = Policy.member(entry.value, args.member)
             if not callback then reject('API_UNAVAILABLE', 'Method is not exposed') end
+            if type(entry.value) == 'userdata' and not Policy.nativeCallable(callback) then
+                reject('UNREVIEWED_CALLABLE', 'Object method was replaced by an unreviewed Lua function')
+            end
             value = callback(entry.value, unpack(arguments, 1, count))
             data = { value = descriptor(value, entry.origin .. ':' .. args.member, entry.depth + 1, selected.returns) }
         elseif target:sub(1, 5) == 'root:' then
@@ -337,7 +355,8 @@ function D.status()
         root_passes = s.rootPasses, roots_visited = s.rootsVisited, pending_jobs = s.queueTail - s.queueHead,
         handles_created = s.handleSequence, handles_evicted = s.handlesEvicted,
         queue_dropped = s.queueDropped, depth_limited = s.depthLimited, config = s.config,
-        coverage = 'reviewed_readers_only', read_policy = 'reviewed_allowlist_v1', automatic_object_graph = false, requires_arguments_are_on_demand = true,
+        coverage = 'reviewed_readers_only', read_policy = 'reviewed_allowlist_v1',
+        handle_policy = 'identity_buckets_v1', automatic_object_graph = false, requires_arguments_are_on_demand = true,
         records_directory = 'Lua/PZDebugMCP/' .. D.endpoint .. '/records',
         last_error = s.lastError or J.null }
 end
@@ -449,8 +468,10 @@ local function collectRoot(name)
                     local layout = objectLayout(entry)
                     for i = 1, layout.methods do
                         local method = layout.methodEntries and layout.methodEntries[i] or methodInfo(value, i - 1)
-                        if method.name == member and method.readable and method.available and #method.parameters == 0 then
-                            data.properties[member] = Policy.member(value, member)(value)
+                        local callback = method.available and Policy.member(value, member) or nil
+                        if method.name == member and method.readable and callback and #method.parameters == 0
+                            and (type(value) ~= 'userdata' or Policy.nativeCallable(callback)) then
+                            data.properties[member] = callback(value)
                             break
                         end
                     end

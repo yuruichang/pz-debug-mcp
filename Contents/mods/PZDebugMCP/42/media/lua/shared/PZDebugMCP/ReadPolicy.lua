@@ -29,6 +29,12 @@ end
 function P.nativeCallable(value)
     return type(value) == 'function' and not instanceof(value, 'LuaClosure')
 end
+function P.identityKey(value)
+    local util = rawget(_G, 'KahluaUtil')
+    local identity = type(util) == 'table' and rawget(util, 'identityHashCode') or nil
+    if identity and P.nativeCallable(identity) then return 'identity:' .. identity(value) end
+    return 'fallback'
+end
 -- Only inspect raw exposure tables; a failed userdata index can open the Debug UI.
 function P.member(value, name)
     if type(value) == 'table' then return rawget(value, name) end

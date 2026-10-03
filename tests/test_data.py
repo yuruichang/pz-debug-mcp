@@ -96,6 +96,24 @@ class DebugDataTests(unittest.TestCase):
         self.request('configure_recorder', {'max_handles': 128})
         self.assertEqual(self.request('query_debug', {'target': player, 'action': 'inspect'})['error']['code'], 'HANDLE_EXPIRED')
 
+    def test_identity_bucket_collisions_and_equal_tables_are_distinct(self):
+        self.lua.execute("local P=require 'PZDebugMCP/ReadPolicy'; P.identityKey=function() return 'collision' end; SandboxVars.a={}; SandboxVars.b={}")
+        sandbox = self.request('query_debug', {'target': 'root:SandboxVars'})['result']['data']['value']['handle']
+        a = self.request('query_debug', {'target': sandbox, 'action': 'table', 'member': 'a'})['result']['data']['value']['handle']
+        b = self.request('query_debug', {'target': sandbox, 'action': 'table', 'member': 'b'})['result']['data']['value']['handle']
+        self.assertNotEqual(a, b)
+        self.lua.execute('SandboxVars.a.changed=true')
+        again = self.request('query_debug', {'target': sandbox, 'action': 'table', 'member': 'a'})['result']['data']['value']['handle']
+        self.assertEqual(a, again)
+
+    def test_unreviewed_collection_accessors_are_not_invoked(self):
+        self.lua.execute("collectionCalls=0; SandboxVars.list={__debugNative=true,__debugList=true,size=function() collectionCalls=collectionCalls+1; return 1 end,get=function() collectionCalls=collectionCalls+1; return 'asset' end}")
+        sandbox = self.request('query_debug', {'target': 'root:SandboxVars'})['result']['data']['value']['handle']
+        collection = self.request('query_debug', {'target': sandbox, 'action': 'table', 'member': 'list'})['result']['data']['value']['handle']
+        data = self.request('query_debug', {'target': collection, 'action': 'inspect', 'limit': 100})['result']['data']
+        self.assertEqual(data['collection_access'], 'not_reviewed')
+        self.assertEqual(self.lua.globals().collectionCalls, 0)
+
     def test_record_segments_rotate_and_publish_committed_index(self):
         self.request('configure_recorder', {'enabled': False})
         self.lua.execute("for i=1,2100 do B.Data.query({target='getDebug'}) end")

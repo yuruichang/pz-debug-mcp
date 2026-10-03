@@ -11,3 +11,5 @@
 审核过的全局函数若被 Lua 函数替换，自动采集会记录未审核状态，不执行替换函数。后续扩大范围必须先审核具体实现/签名、补充白名单与回归测试，再开展真实游戏联调。
 
 自动化回归覆盖：未知 getter 有副作用计数器但调用次数始终为零；表 getClass/__index 钩子未执行；原版 Kahlua 对未暴露对象采集不新增 Lua 错误。实际游戏无报错验证需载入修正版后进行。
+
+0.2.3 的句柄索引使用已检查字节码的 KahluaUtil.identityHashCode（调用 System.identityHashCode），桶内通过 rawequal 作引用比较；BaseLib.luaEquals 的对象分支是引用比较，不调用对象的 equals/hashCode。回归检查涵盖相等 Java 列表、可变列表、强制哈希碰撞及自定义 hashCode/equals 调用计数为零。集合访问器不再绕过审核，Lua 替换的对象方法也不执行。

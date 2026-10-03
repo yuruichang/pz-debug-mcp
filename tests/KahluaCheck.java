@@ -44,7 +44,7 @@ public final class KahluaCheck {
         environment.rawset("realObject", new ReadableObject());
         environment.rawset("realOpaque", new OpaqueObject());
         run(thread, environment, "assert(getNumClassFields ~= nil,'missing fields API'); " +
-            "assert(getNumClassFields(realObject)==2); local f=getClassField(realObject,0); " +
+            "assert(getNumClassFields(realObject)>=2); local f=getClassField(realObject,0); " +
             "assert(getClassFieldVal(realObject,f)==76);", "native_surface");
         run(thread, environment, "local B=PZDebugMCP; local J=B.Json; " +
             "local P=require 'PZDebugMCP/ReadPolicy'; P.methods['KahluaCheck$ReadableObject']={getHealth={['']=true}}; " +
@@ -55,11 +55,33 @@ public final class KahluaCheck {
             "local b=request('query_debug',{target=h,action='field',member='health'}); assert(b.ok,J.encode(b)); assert(b.result.data.value==76); " +
             "assert(not request('query_debug',{target=h,member='setHealth',arguments=J.array({1})}).ok); " +
             "assert(not request('query_debug',{target=h,member='getMystery'}).ok); " +
-            "request('query_debug',{target=h,action='inspect',limit=100}); assert(realObject:getSideEffectCount()==0);", "native_java");
+            "request('query_debug',{target=h,action='inspect',limit=100}); assert(realObject:getSideEffectCount()==0); " +
+            "assert(realObject:getIdentityCalls()==0,'Object hashCode/equals must not run');", "native_java");
         int errorsBefore = KahluaThread.m_errors_list.size();
         run(thread, environment, "local B=PZDebugMCP; SandboxVars.opaque=realOpaque; SandboxVars.getClass=function() error('must not execute') end; " +
             "request('query_debug',{target='root:SandboxVars'}); for i=1,20 do clock=clock+100; B.tick() end;", "opaque_collection");
         if (KahluaThread.m_errors_list.size() != errorsBefore) throw new AssertionError("Routine collection emitted Lua errors");
+        var identityUtil = platform.newTable();
+        exposer.exposeGlobalClassFunction(identityUtil, KahluaUtil.class,
+            KahluaUtil.class.getMethod("identityHashCode", Object.class), "identityHashCode");
+        environment.rawset("KahluaUtil", identityUtil);
+        var listA = new ArrayList<String>();
+        var listB = new ArrayList<String>();
+        environment.rawset("listA", listA);
+        environment.rawset("listB", listB);
+        run(thread, environment, "SandboxVars.a=listA; SandboxVars.b=listB; " +
+            "local s=request('query_debug',{target='root:SandboxVars'}).result.data.value.handle; " +
+            "nativeListHandle=request('query_debug',{target=s,action='table',member='a'}).result.data.value.handle; " +
+            "local b=request('query_debug',{target=s,action='table',member='b'}).result.data.value.handle; " +
+            "assert(nativeListHandle~=b,'Equal Java lists must have distinct handles'); " +
+            "local P=require 'PZDebugMCP/ReadPolicy'; P.identityKey=function() return 'collision' end; " +
+            "local a2=request('query_debug',{target=s,action='table',member='a'}).result.data.value.handle; " +
+            "local b2=request('query_debug',{target=s,action='table',member='b'}).result.data.value.handle; " +
+            "assert(a2~=b2,'Identity collisions must not merge objects'); nativeListHandle=a2;", "native_identity");
+        listA.add("changed");
+        run(thread, environment, "local s=request('query_debug',{target='root:SandboxVars'}).result.data.value.handle; " +
+            "local a=request('query_debug',{target=s,action='table',member='a'}).result.data.value.handle; " +
+            "assert(a==nativeListHandle,'Mutable Java objects must retain their handle');", "mutable_identity");
         System.out.println("Kahlua integration checks passed");
     }
     private static void run(KahluaThread thread, KahluaTable env, String source, String name) throws Exception {
@@ -71,8 +93,12 @@ public final class KahluaCheck {
         public double getHealth() { return health; }
         public void setHealth(double value) { health = value; }
         private int sideEffects;
+        private int identityCalls;
         public double getMystery() { sideEffects++; return 1; }
         public int getSideEffectCount() { return sideEffects; }
+        public int getIdentityCalls() { return identityCalls; }
+        @Override public int hashCode() { identityCalls++; return 123; }
+        @Override public boolean equals(Object other) { identityCalls++; return this == other; }
     }
     public static final class OpaqueObject { }
     public static final class Reflection {
