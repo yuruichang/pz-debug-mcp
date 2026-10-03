@@ -1,8 +1,10 @@
-# PZ Debug MCP 0.1.0
+# PZ Debug MCP 0.2.0
 
-把支持 MCP 的 AI 客户端连接到正在运行的 Project Zomboid，通过原版 Debug/Lua API 查询游戏状态、记录车辆变化并执行有限的调试操作。
+把支持 MCP 的 AI 客户端连接到 Project Zomboid，通过原版 Debug/Lua API 持续记录游戏数据，按需查询对象与历史数据。覆盖角色、世界、天气、时间、物品、脚本、调试选项和 Lua 运行时等接口，保留车辆专用采样、预定义测试与受控重载。
 
-采用分享会话的第一阶段方案：**AI 客户端 → 标准 MCP stdio → 本机 Python 服务 → 带编号的文件消息 → 游戏内 Bridge Mod → 原版 Lua/Debug/游戏对象接口**。
+采用分享会话的文件桥架构，并扩展为：**原版 Debug/Lua 数据 → 游戏侧持续采集 → 本机缓冲与后台历史归档 → AI 通过 MCP 按需取回**。AI 还可以通过带编号的文件请求查询指定对象，或注册带参数的持续采集任务。
+
+个人私有仓库：[yuruichang/pz-debug-mcp](https://github.com/yuruichang/pz-debug-mcp)。每批完成并验证的代码修改均提交、推送；运行数据、存档、游戏文件与本机配置不上传。
 
 目标版本为 **B42.21.0**。已核对本机游戏 API，并在游戏自带 Kahlua 运行时执行测试；尚未在实际存档内联调。B42.20 与 B41 未验证。
 
@@ -16,6 +18,8 @@
 ```
 
 模组复制到 `%USERPROFILE%\Zomboid\mods\PZDebugMCP`。安装脚本会备份已有同名模组，不修改其他模组或存档的启用列表。在游戏中启用 **PZDebugMCP**，给游戏启动选项加入 `-debug`，然后进入测试存档。非 Debug 模式只返回状态，不执行调试请求。
+
+进入游戏时模组自动把原版 `getOptionPauseOnFocusloss/setOptionPauseOnFocusloss` 设置为关闭，并每秒重新校验。切换到 AI 客户端时游戏继续运行。`pz_status` 的 `focus_pause.disabled=true` 表示设置已经生效；此功能不解除手动暂停、Lua 断点暂停或 JVM 暂停。
 
 `setup.ps1` 生成本机绝对路径配置 `mcp-config.json`。将其中 `pz_debug` 项加入 AI 客户端的 MCP 配置；它使用标准 `mcpServers` JSON 格式。使用其他配置格式的客户端，可填同样的命令、参数和环境变量：
 
@@ -53,6 +57,59 @@
 | `pz_run_test` | 已注册的预定义测试 |
 | `pz_reload_mod_lua` | 预注册模块的清理、原版重载和初始化 |
 | `pz_read_console` | 本机 `console.txt` 增量；离线也可读取 |
+| `pz_list_debug_interfaces` | 原版全局接口目录与对象的全部字段/方法，支持分类和分页 |
+| `pz_query_debug` | 通用全局、对象方法、反射字段及 Lua 表查询；结果自动记录 |
+| `pz_read_recorded_data` | 按目标和类型分页检索自动归档的数据，支持历史会话与离线读取 |
+| `pz_configure_recorder` | 采集频率、执行预算、对象图深度、句柄容量及刷新周期 |
+| `pz_watch_debug` | 注册、列出和移除带参数接口的持续采集任务 |
+
+## 通用数据采集与按需取回
+
+随包附带从本机 42.21.0 签名生成的 **764 个全局 API** 和 **1152 个类型及其父类/接口** 的方法目录。全局目录中有 330 个符合读取规则的签名；写操作、返回 void 的方法和已知工厂/消费型 getter 不作为数据读取执行。目录会标明当前执行端是否暴露接口，目录数量不代表全部调用已在实际存档内验证。
+
+桥接无需等待 AI 请求就会启动采集。它轮询无参读取接口、`_G`、`SandboxVars` 等表根，再沿返回的对象读取原版对象查看器所能访问的字段、集合元素以及可用的无参 getter。继承接口一并列出；不暴露或访问失败的成员保存状态或错误。采集过程不执行 Lua 表中的函数或任意源码。
+
+每条记录有会话、递增序号、时间戳、目标和纯数据。对象以会话内句柄关联，避免把整个对象图塞入一次响应。字段反射元数据未暴露时使用原版字段索引和签名名称回退；原版反射禁止的目标不绕过限制。
+
+例如查询玩家与健康值：
+
+```json
+{"tool":"pz_query_debug","arguments":{"target":"getPlayer"}}
+{"tool":"pz_list_debug_interfaces","arguments":{"scope":"object","handle":"上一步返回的句柄","limit":50}}
+{"tool":"pz_query_debug","arguments":{"target":"玩家句柄","member":"getHealth"}}
+{"tool":"pz_read_recorded_data","arguments":{"target":"getPlayer","limit":50}}
+```
+
+查询天气或 Lua 表：
+
+```json
+{"tool":"pz_query_debug","arguments":{"target":"getClimateManager"}}
+{"tool":"pz_query_debug","arguments":{"target":"天气对象句柄","member":"getTemperature"}}
+{"tool":"pz_query_debug","arguments":{"target":"root:SandboxVars"}}
+{"tool":"pz_query_debug","arguments":{"target":"沙盒表句柄","action":"table","member":"DayLength"}}
+```
+
+需要参数的接口可以传标量或 `{"handle":"对象句柄"}`，例如 `getNumClassFields` 的对象参数。用 `action=field` 和 `member` 或 `field_index` 读取字段；用 `action=inspect` 和 `offset/limit` 分页查看对象。句柄在会话切换、容量淘汰或调整容量后会失效，已有历史数据仍可读取。
+
+对有坐标、索引或对象参数的查询，先确认参数，再注册一次持续采集：
+
+```json
+{"tool":"pz_watch_debug","arguments":{"query":{"target":"getNumClassFields","arguments":[{"handle":"玩家句柄"}]},"interval_ms":1000}}
+{"tool":"pz_watch_debug","arguments":{"action":"list"}}
+{"tool":"pz_read_recorded_data","arguments":{"kind":"query","target":"getNumClassFields"}}
+```
+
+最多 128 个持续查询，间隔 100–60000 ms，由游戏回调采集。它们在新会话中重置；旧对象参数失效会在列表中报告错误。
+
+## 数据保存与覆盖边界
+
+游戏缓存 `Lua/PZDebugMCP/{client,server}/records/` 保存 16 个轮换缓冲文件，每个最多 128 条或约 256 KiB，并发布已关闭写入的记录索引。MCP 服务运行后，每 0.5 秒自动把新记录归档到同一执行端的 `recordings.sqlite3`，与 AI 是否发起查询无关。已归档记录保留全部收到的历史，不随游戏缓冲轮换删除；本地归档会随调试时长增长。
+
+`pz_read_recorded_data` 返回 `available_sessions`。指定 `recording_session` 可以检索旧会话；用上次 `cursor` 作为 `after` 分页，`session` 用于识别游标是否跨会话。`gaps` 明确标出连接前或服务中断期间已被游戏缓冲覆盖的记录。要保留全程历史，请从调试开始就让 MCP 服务保持运行。
+
+“覆盖全部可读接口”不等于某一帧无限复制世界和所有对象。默认每 100 ms 调度，最多四项任务，约 2 ms 的协作预算，遍历深度四层，最多 4096 个句柄。可用 `pz_configure_recorder` 调整。单个原版 getter 不能被此预算强制中断；实际采样和遍历速度受游戏帧率、getter 耗时和磁盘写入影响。
+
+`pz_status.recorder` 报告目录范围、扫描轮次、待处理任务、深度限制和淘汰数量。集合和对象分页覆盖当前已加载状态；需要参数的接口不能枚举无限参数域，未加载区域无法凭空取得，原版反射不可读的数据也不会被标成已记录。指定查询可继续访问自动遍历深度之外的对象。断点或 JVM 暂停后，只能可靠取回已归档数据，实时请求路径仍可能停止。
 
 推荐先调用：
 
@@ -132,7 +189,7 @@ if not B.reloading then init() end
 
 `TIMEOUT` 只表示没有及时收到结果，**不代表代码取消或未执行**。已经领取却没有完成结果的请求，会让后续请求返回 `INDETERMINATE`；等待迟到的结果，或重启游戏执行端建立新会话。不要自动重试修改操作，也不要在游戏运行时手动清空 `claim.json` 来绕过此检查。
 
-普通暂停时同时尝试 `OnTickEvenPaused`；Lua 断点暂停或整个 JVM 暂停时桥接可能无法响应。第一版不提供断点、单步、局部变量或 JDWP，也不提供任意 Lua 执行。
+普通暂停时同时尝试 `OnTickEvenPaused`；Lua 断点暂停或整个 JVM 暂停时桥接可能无法响应。通用查询可访问原版协程、调用帧和局部变量读取接口，但读取的是回调执行时的运行上下文，不是已验证的暂停断点会话。本版不提供完整断点/单步控制或 JDWP，也不提供任意 Lua 执行。
 
 ## 开发验证与打包
 
@@ -143,7 +200,9 @@ if not B.reloading then init() end
 
 构建需要 JDK 的 `javac`，并使用指定游戏自带 Java/Kahlua。它运行标准 MCP 握手、真实文件桥、并发与超时测试、Lua 5.1 行为测试，以及原版 Kahlua 的协议/车辆/重载/Unicode 检查。游戏对象与事件在这些自动测试中是受控桩，不替代实际存档联调。
 
-产物为 `dist/PZDebugMCP-mod-0.1.0.zip` 和 `dist/PZDebugMCP-source-0.1.0.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
+加 `-RefreshCatalog` 可从指定游戏重新提取全局及公开类型签名；生成内容只有接口元数据，不包含游戏实现。当前目录与测试针对 42.21.0，换版本仍需重新审核与实际联调。
+
+产物为 `dist/PZDebugMCP-mod-0.2.0.zip` 和 `dist/PZDebugMCP-source-0.2.0.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
 
 实际游戏验收：进入 Debug 测试存档 → `pz_status` 在线且 `debug_enabled=true` → 自检通过 → 驾驶车辆读取快照 → 完成一组拖挂采样 → 连续重载 `example_counter` 两次并确认测试仍能执行。服务端需另做同样的验收。
 

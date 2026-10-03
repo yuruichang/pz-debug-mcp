@@ -1,5 +1,5 @@
 id=PZDebugMCP
 name=PZ Debug MCP
-description=本机 MCP 调试桥：原版 Debug/Lua 接口、车辆观测与采样、预定义测试、受控模块重载。仅 Debug 模式启用指令。
-modversion=0.1.0
+description=原版 Debug 数据 MCP 桥：通用接口与对象查询、持续采集与历史归档、自动关闭失焦暂停、车辆采样、预定义测试及受控重载。
+modversion=0.2.0
 versionMin=42.21
