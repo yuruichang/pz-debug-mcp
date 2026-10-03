@@ -195,6 +195,12 @@ if not B.reloading then init() end
 
 ## 开发验证与打包
 
+完整接口覆盖结果见 [覆盖报告](docs/INTERFACE_COVERAGE.md)。本次对 764 个全局接口和 24834 个公开方法条目逐项建立状态，当前真实单机环境中 573 个新签名通过只读调用验证，新增 Lua 错误为零。非数据指令、状态写入、纯读证据不足、代理改写及上下文缺失项保留禁用。
+
+复现工具位于 `tools/BytecodeAudit.java`、`audit_interfaces.py`、`prepare_live_validation.py` 和 `run_live_validation.py`。它按真实游戏类路径读取效果元数据，生成审核清单，再临时装入已有的可重载示例模块进行有预算限制的验证。验证结束后恢复示例模块，释放临时对象引用；覆盖报告不包含游戏值。
+
+调用通过只表示在记录的参数和当前对象上下文中返回成功，不代表已经穷尽业务分支、多人/断点环境或所有参数组合。`requires_review` 等状态不是通过，不能以此启用未知 getter。
+
 ```powershell
 .\setup.ps1 -Development
 .\build.ps1 -GameDir 'E:\Steam\steamapps\common\ProjectZomboid'
