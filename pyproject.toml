@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pz-debug-mcp"
-version = "0.3.1"
+version = "0.4.0"
 description = "Project Zomboid ZombieBuddy Java debug bridge and local MCP server"
 requires-python = ">=3.11"
 dependencies = ["mcp==1.30.0"]

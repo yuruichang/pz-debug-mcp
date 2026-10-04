@@ -129,14 +129,14 @@ local function names(registry, kind)
 end
 
 handlers.status = function()
-    return { protocol = 1, version = '0.3.1', backend = B.java and 'zombiebuddy_java' or 'lua_fallback',
+    return { protocol = 1, version = '0.4.0', backend = B.java and 'zombiebuddy_java' or 'lua_fallback',
         game_version = getCore():getVersionNumber(),
         session = B.session, endpoint = B.endpoint, timestamp_ms = now(), debug_enabled = isDebug(),
         mode = isServer() and 'server' or (isClient() and 'multiplayer_client' or 'singleplayer'),
         capabilities = { inspect_vehicle = true, vehicle_trace = true, run_test = true,
             debug_errors = type(getLuaDebuggerErrors) == 'function', reload_lua = type(reloadLuaFile) == 'function',
             reload_server_lua = type(reloadServerLuaFile) == 'function', arbitrary_lua = false,
-            breakpoint_control = false, paused_polling = B.pausedPolling },
+            breakpoint_control = B.java ~= nil, paused_polling = B.pausedPolling },
         focus_pause = B.focusPause, recorder = Data.status(),
         tests = names(B.tests, 'test'), modules = names(B.modules, 'module') }
 end
@@ -405,7 +405,7 @@ function B.start(endpoint)
                 B.focusPause = Focus.apply(B.endpoint)
                 if not B.java then
                     jsonWrite('heartbeat.json', { protocol = 1, session = B.session, endpoint = B.endpoint,
-                        timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.3.1',
+                        timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.4.0',
                         focus_pause = B.focusPause, game_version = getCore():getVersionNumber() })
                 end
             end

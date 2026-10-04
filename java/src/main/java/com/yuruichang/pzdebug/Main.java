@@ -8,7 +8,7 @@ public final class Main {
         JavaDiagnostics.install();
         registerLua();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            PZDebugJava.close(); MethodTrace.close(); JavaDiagnostics.close();
+            PZDebugJava.close(); LuaDebugger.close(); MethodTrace.close(); JavaDiagnostics.close();
         }, "PZDebugMCP-Shutdown"));
         System.out.println("[PZDebugMCP] Java " + BridgeRuntime.VERSION + " loaded");
     }

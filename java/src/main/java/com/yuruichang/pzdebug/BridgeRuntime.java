@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public final class BridgeRuntime implements AutoCloseable {
-    public static final String VERSION = "0.3.1";
+    public static final String VERSION = "0.4.0";
     public static final class Failure extends RuntimeException {
         final String code;
         public Failure(String code, String message) { super(message); this.code = code; }
@@ -50,7 +50,7 @@ public final class BridgeRuntime implements AutoCloseable {
     private Map<String, Object> status() {
         Map<String, Object> result = new LinkedHashMap<>(gameStatus);
         result.putAll(Json.object("protocol", 1, "version", VERSION, "backend", "zombiebuddy_java",
-            "session", session, "endpoint", endpoint, "timestamp_ms", System.currentTimeMillis(),
+            "session", session, "endpoint", endpoint, "timestamp_ms", System.currentTimeMillis(), "pid", ProcessHandle.current().pid(),
             "debug_enabled", debug, "game_thread_age_ms", gameTick == 0 ? null : System.currentTimeMillis() - gameTick,
             "recorder", recorder.status(), "java_collector", inspectorStatus,
             "independent_communication", true, "runtime_mailbox", "runtime", "java_runtime", JavaDiagnostics.runtime(Json.object())));
@@ -75,6 +75,7 @@ public final class BridgeRuntime implements AutoCloseable {
         }
     }
     void tick() {
+        LuaDebugger.gameTick(zombie.Lua.LuaManager.thread);
         long now = System.currentTimeMillis();
         if (recorder.enabled() && debug) {
             if (now >= nextMods) { modTypes = JavaDiagnostics.modClasses(); nextMods = now + 10000; modCursor = 0; }
@@ -107,6 +108,7 @@ public final class BridgeRuntime implements AutoCloseable {
                 }
                 JavaDiagnostics.drainObservations(recorder);
                 MethodTrace.drain();
+                LuaDebugger.maintenance();
                 recorder.drain();
                 Thread.sleep(25);
             } catch (InterruptedException e) { Thread.currentThread().interrupt(); break; }
@@ -125,6 +127,7 @@ public final class BridgeRuntime implements AutoCloseable {
             case "java_runtime" -> Json.text(args, "section", "").equals("roots") ? inspectorStatus : JavaDiagnostics.runtime(args);
             case "read_errors" -> readErrors(args);
             case "trace_java" -> MethodTrace.request(args, recorder);
+            case "lua_debug" -> LuaDebugger.request(args);
             default -> {
                 if (!allowGame) throw new Failure("UNKNOWN_OPERATION", "Game operations cannot use the diagnostic mailbox");
                 if (!gameRequests.offer(text)) throw new Failure("BUSY", "Game request queue is occupied");

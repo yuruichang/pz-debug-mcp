@@ -1,4 +1,4 @@
-# PZ Debug MCP 0.3.1
+# PZ Debug MCP 0.4.0
 
 [简体中文](README.md) | **English**
 
@@ -6,11 +6,11 @@ Connect an MCP-compatible client to Project Zomboid. The ZombieBuddy Java core c
 
 The original file bridge protocol and all existing tools are retained, with additional tools for Java runtime queries, field inspection, and bounded method tracing. The Java diagnostic mailbox runs independently of game requests: recorded data, cached errors, and JVM state remain accessible while Lua is paused or a game request is waiting. See the [Java bridge guide](docs/JAVA_BRIDGE.md) for detailed limits.
 
-Targets **B42.21.0, Java 25, and ZombieBuddy 2.3.2**, including the optimized build installed locally. The renamed APIs in ZombieBuddy 3.x are not yet supported. The older Lua version has been tested in a real save. The 0.3.1 Java version passes JVM, MCP, and the game's Kahlua checks; actual save startup validation is documented separately in the [validation log](VALIDATION.md). B42.20 and B41 have not been verified. Supporting documents linked from this README are currently in Chinese.
+Targets **B42.21.0, Java 25, and ZombieBuddy 2.3.2**, including the optimized build installed locally. The renamed APIs in ZombieBuddy 3.x are not yet supported. The older Lua version has been tested in a real save. The 0.4.0 Java version passes JVM, MCP, and the game's Kahlua checks; actual save startup validation is documented separately in the [validation log](VALIDATION.md). B42.20 and B41 have not been verified. Supporting documents linked from this README are currently in Chinese.
 
 ## Installation and connection
 
-Requires Python 3.11+ and ZombieBuddy installed and enabled in the game. Building from source also requires JDK 25:
+Requires Python 3.11+ and ZombieBuddy installed and enabled in the game. Building from source also requires JDK 25, Visual Studio C++ Build Tools, and the Windows SDK:
 
 ```powershell
 .\setup.ps1 -Development
@@ -66,6 +66,9 @@ The mod and Debug mode must also be enabled on the server. The client and server
 | `pz_java_runtime` | JVM metrics, thread stacks, loaded classes, Java mod/patch metadata, and object roots |
 | `pz_inspect_java` | Java private/static fields, arrays, and method metadata, with explicit access limits |
 | `pz_trace_java` | Bounded sampling of a selected Java method's arguments, return values, exceptions, and duration |
+| `pz_java_debug` | External JDI: Java breakpoints, locals, threads/stacks, stepping, and current VM bytecode summaries |
+| `pz_lua_debug` | Built-in Kahlua: Lua breakpoints, paused frames/locals, stepping, and resume |
+| `pz_native_debug` | Windows native debugging: modules/symbols, machine-code breakpoints, stacks, registers, PDB locals, and bounded memory reads |
 
 ## General collection and on-demand retrieval
 
@@ -195,7 +198,7 @@ Only bounded, predefined debugging operations are accepted. File contents are no
 
 `TIMEOUT` means a response was not received in time. **It does not mean execution was canceled or never occurred.** A claimed request without a completed result causes further requests on that mailbox to return `INDETERMINATE`; the independent diagnostic mailbox remains usable. Wait for a late result or restart the game endpoint to create a new session. Do not automatically retry operations that modify state, or clear `claim.json` while the game is running to bypass this protection.
 
-During a normal pause, the bridge also attempts polling through `OnTickEvenPaused`. While Lua is paused, the independent Java heartbeat, JVM queries, cached data, and offline archive remain accessible; game-object queries require callbacks to resume. Suspending the entire JVM blocks the bridge. Coroutine, call-frame, and local-variable APIs are currently cataloged only; unreviewed APIs are not invoked. This version does not provide full breakpoint/stepping control, JDWP, or arbitrary Lua execution.
+During a normal pause, the bridge also attempts polling through `OnTickEvenPaused`. While Lua is paused, the independent Java heartbeat, JVM queries, cached data, and offline archive remain accessible; game-object queries require callbacks to resume. Suspending the entire JVM blocks the bridge. Paused Lua frames and locals are available through pz_lua_debug; unreviewed catalog APIs remain disabled. Version 0.4.0 adds independent Java/Lua breakpoint and stepping control plus Windows native debugging; see the [debugging guide](docs/DEBUGGING.md). Run `enable-debugging.ps1` and restart to enable loopback JDWP for Java. Arbitrary Lua/Java expressions are not evaluated; native source and private types require matching PDB symbols.
 
 ## Development, validation, and packaging
 
@@ -214,7 +217,7 @@ Building requires JDK 25's `javac` and an installed ZombieBuddy, and uses the se
 
 Use `-RefreshCatalog` to extract global and public type signatures from the selected game again. Generated files contain API metadata only, not game implementations. The current catalogs and checks target 42.21.0; changing game versions requires a new review and in-game validation.
 
-Artifacts include `dist/PZDebugMCP-mod-0.3.1.zip`, `dist/PZDebugMCP-workshop-0.3.1.zip`, and `dist/PZDebugMCP-source-0.3.1.zip`, with SHA-256 checksums. Extract the Workshop archive directly into the cache's Workshop directory. It includes a private-visibility workshop.txt, a 256×256 preview.png, metadata and images for the common and 42 directories, and the Java JAR. The source archive excludes local Python environments, game files, recording databases, and machine-specific connection configuration. Add `-InstallMod` to install after validation passes.
+Artifacts include `dist/PZDebugMCP-mod-0.4.0.zip`, `dist/PZDebugMCP-workshop-0.4.0.zip`, and `dist/PZDebugMCP-source-0.4.0.zip`, with SHA-256 checksums. Extract the Workshop archive directly into the cache's Workshop directory. It includes a private-visibility workshop.txt, a 256×256 preview.png, metadata and images for the common and 42 directories, and the Java JAR. The source archive excludes local Python environments, game files, recording databases, and machine-specific connection configuration. Add `-InstallMod` to install after validation passes.
 
 In-game acceptance: enter a Debug test save → `pz_status` is online with `debug_enabled=true` → self-test passes → inspect a vehicle while driving → complete a towing capture → reload `example_counter` twice and confirm that its test still runs. Dedicated servers require their own acceptance checks.
 
@@ -230,3 +233,9 @@ The built-in Debug mode does not provide an MCP port. This project calls built-i
 ## Workshop staging validation
 
 Staging defaults to private visibility; new packages do not prefill a Workshop ID. Installation and building prepare local files without submitting a Steam item. After exiting the game, run `tools/check-workshop.ps1` to validate images, version directories, mod.info, and file types through the local game's SteamWorkshopItem.validateContents. The check does not call create/submitUpdate.
+
+## Breakpoints and patch registration
+
+`pz_java_runtime(section=patches)` reads an independent patch ledger from actual approved loaded JARs, without relying on private ZombieBuddy optimization classes. Declarations, preparation logs, transformation reports, and current VM method evidence are distinct; intent does not prove successful application. Java supports future loaded classes, line/exception breakpoints, frames/locals, and into/over/out. Lua uses the built-in pause entry and a lease for disconnect recovery. Windows native debugging provides modules/symbols, OS threads, stacks, breakpoints, and stepping; without PDBs, only available addresses and exports can be reported.
+
+After exiting the game, run `enable-debugging.ps1`. It adds only loopback JDWP at 127.0.0.1:8801 with suspend=n and backs up existing launch options. Use `-Disable` to undo it. See the [debugging guide](docs/DEBUGGING.md) for lifecycle and validation limits.

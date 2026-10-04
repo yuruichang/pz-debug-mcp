@@ -5,6 +5,7 @@ $root = $PSScriptRoot
 $runtime = Join-Path $root '.venv/Scripts/python.exe'
 if (-not (Test-Path -LiteralPath $runtime)) { throw 'Run setup.ps1 -Development first' }
 $env:PYTHONUTF8 = '1'
+& (Join-Path $root 'tools/build-debuggers.ps1')
 & (Join-Path $root 'tools/build-java.ps1') -GameDir $GameDir -Test
 if ($RefreshCatalog) {
     & $runtime (Join-Path $root 'tools/generate_catalog.py') --game-dir $GameDir

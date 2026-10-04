@@ -114,7 +114,10 @@ class JavaBridgeTests(unittest.TestCase):
             async with stdio_client(params) as (reader, writer):
                 async with ClientSession(reader, writer) as session:
                     await session.initialize()
-                    self.assertEqual(len((await session.list_tools()).tools), 15)
+                    self.assertEqual(len((await session.list_tools()).tools), 18)
+                    for name in ('pz_java_debug','pz_lua_debug','pz_native_debug'):
+                        state=await session.call_tool(name,{'action':'status'})
+                        self.assertFalse(state.isError)
                     metrics = await session.call_tool('pz_java_runtime', {'section': 'metrics'})
                     self.assertFalse(metrics.isError)
                     status = self.bridge.request('client', 'status')

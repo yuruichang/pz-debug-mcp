@@ -120,7 +120,10 @@ public final class JavaDiagnostics {
                 "instrumentation", instrumentation != null, "loaded_classes", loaded.length,
                 "static_initialization_check", shouldInitialize != null, "bytecode_observer", observer != null,
                 "unavailable_reason", unavailable, "metrics", metrics(),
-                "breakpoint_control", false, "native_engine_internals", false);
+                "java_breakpoint_backend", "external_jdi", "lua_breakpoint_backend", "kahlua",
+                "native_debug_backend", "external_windows_dbgeng",
+                "jdwp_enabled", ManagementFactory.getRuntimeMXBean().getInputArguments().stream().anyMatch(a->a.startsWith("-agentlib:jdwp=")),
+                "breakpoint_control", true, "native_engine_internals", "requires_external_native_attachment");
             case "metrics" -> metrics();
             case "threads" -> threads(offset, limit, filter);
             case "classes" -> classes(offset, limit, filter);
@@ -193,23 +196,11 @@ public final class JavaDiagnostics {
         out.put("available", reason == null); out.put("unavailable_reason", reason); return out;
     }
     private static Object patches(int offset, int limit, String filter) {
-        List<Object> result = new ArrayList<>(); String reason = null;
-        try {
-            Class<?> cls = Class.forName("local.zbselective.TargetInstrumentation", false, JavaDiagnostics.class.getClassLoader());
-            if (!initialized(cls)) throw new IllegalAccessException("Registry initialization not confirmed");
-            Map<?, ?> registry = (Map<?, ?>) field(cls, "targets");
-            for (var entry : registry.entrySet()) {
-                String pkg = (String) entry.getKey();
-                Object exact = field(entry.getValue(), "exact");
-                for (Object name : (Set<?>) exact) if (((String) name).contains(filter) || pkg.contains(filter))
-                    result.add(Json.object("package", pkg, "class", ((String) name).replace('/', '.'), "kind", "registered_exact_target"));
-                // Wildcard rules remain opaque; matching classes cannot imply patch success.
-                result.add(Json.object("package", pkg, "kind", "wildcard_rules", "count", ((List<?>)field(entry.getValue(), "patterns")).size()));
-            }
-        } catch (ReflectiveOperationException | RuntimeException e) { reason = e.getClass().getSimpleName(); }
-        for (var hash : hashes) if (((String)hash.get("class")).contains(filter)) result.add(hash);
-        var out = page(result, offset, limit);
-        out.put("target_registry_available", reason == null); out.put("unavailable_reason", reason);
+        Path console=Path.of(zombie.ZomboidFileSystem.instance.getCacheDir()).resolve("console.txt");
+        var out=Json.map(PatchCatalog.list(mods(0,100,""),offset,limit,filter,console));
+        List<Object> observations=new ArrayList<>();
+        for (var hash : hashes) if (((String)hash.get("class")).contains(filter)) observations.add(hash);
+        out.put("observations",observations);
         out.put("observation_stage", "observer_input_after_installation");
         out.put("final_runtime_bytecode_proven", false); out.put("observer_dropped", observedDropped);
         return out;

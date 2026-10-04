@@ -14,6 +14,7 @@ from pydantic import Field
 
 from .bridge import Bridge, BridgeError
 from .record_store import RecordStore
+from .debugger import Debuggers
 
 Endpoint = Literal["client", "server"]
 VehicleId = Annotated[int, Field(ge=-32768, le=32767)]
@@ -22,6 +23,7 @@ Limit = Annotated[int, Field(ge=1, le=100)]
 
 def create_server(bridge: Bridge) -> FastMCP:
     store = RecordStore(bridge)
+    debuggers = Debuggers(bridge)
 
     @asynccontextmanager
     async def lifespan(_server):
@@ -40,17 +42,27 @@ def create_server(bridge: Bridge) -> FastMCP:
                     pass
 
         task = asyncio.create_task(archive())
+        async def leases():
+            while not stop.is_set():
+                await asyncio.to_thread(debuggers.renew)
+                try:
+                    await asyncio.wait_for(stop.wait(), 1)
+                except TimeoutError:
+                    pass
+        lease_task = asyncio.create_task(leases())
         try:
             yield {}
         finally:
             stop.set()
             await task
+            await lease_task
+            await asyncio.to_thread(debuggers.close)
 
     mcp = FastMCP("PZ Debug MCP", lifespan=lifespan, instructions=(
         "先查询 pz_status，确认执行端和 debug_enabled。仅调用已注册的有限操作。"
         "TIMEOUT/INDETERMINATE 不代表取消，不可自动重试修改操作。"
         "采样 start 返回 trace_id，再用 read/stop 读取。Java 心跳、缓存和 JVM 查询独立于 Lua 回调；"
-        "游戏对象查询仍需游戏线程执行，整个 JVM 暂停会阻断通信。"))
+        "游戏对象查询仍需游戏线程执行；整个 JVM 暂停时使用外部 pz_java_debug/pz_native_debug 控制和恢复。"))
 
     async def request(endpoint: str, operation: str, arguments: dict | None = None):
         try:
@@ -62,6 +74,7 @@ def create_server(bridge: Bridge) -> FastMCP:
     async def pz_status(endpoint: Endpoint = "client") -> dict:
         """检查心跳、版本、Debug 模式与支持能力。离线也可返回诊断。"""
         status = bridge.status(endpoint)
+        status["debuggers"] = debuggers.status()
         if status["online"]:
             try:
                 status["live"] = await request(endpoint, "status")
@@ -182,6 +195,59 @@ def create_server(bridge: Bridge) -> FastMCP:
         return await request(endpoint, "trace_java", {"action": action, "class_name": class_name,
             "method": method, "parameters": parameters or [], "trace_id": trace_id,
             "duration_seconds": duration_seconds, "after": after, "limit": limit})
+
+    @mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False, "openWorldHint": False})
+    async def pz_java_debug(action: Literal["connect", "disconnect", "status", "threads", "pause", "resume",
+                            "breakpoint_add", "breakpoint_remove", "frames", "step", "object", "bytecode"] = "status",
+                            port: Annotated[int, Field(ge=1, le=65535)] = 8801,
+                            thread_id: str | None = None, class_name: str | None = None, method: str | None = None,
+                            signature: str | None = None, line: Annotated[int, Field(ge=0)] = 0,
+                            exception: bool = False, breakpoint_id: str | None = None,
+                            depth: Literal["into", "over", "out"] = "into", object_id: str | None = None,
+                            session: str | None = None, offset: Annotated[int, Field(ge=0)] = 0, limit: Limit = 32) -> dict:
+        """外部JDI控制Java断点、异常断点、线程暂停、栈帧/局部变量、单步和继续；bytecode读取VM当前方法摘要与分页字节码。JDWP须仅在本机启用，断连解除本会话暂停。"""
+        args = {"port": port, "thread_id": thread_id, "class_name": class_name, "method": method,
+            "signature": signature, "line": line, "exception": exception, "breakpoint_id": breakpoint_id,
+            "depth": depth, "object_id": object_id, "session": session, "offset": offset, "limit": limit}
+        if action == "frames":
+            args["limit"] = min(limit, 64)
+        try:
+            return await asyncio.to_thread(debuggers.java_request, action, {k:v for k,v in args.items() if v is not None})
+        except BridgeError as error:
+            raise ToolError(str(error)) from error
+
+    @mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False, "openWorldHint": False})
+    async def pz_lua_debug(action: Literal["connect", "disconnect", "status", "sources", "pause", "resume",
+                           "breakpoint_add", "breakpoint_remove", "frames", "step"] = "status",
+                           file: str | None = None, line: Annotated[int, Field(ge=1)] | None = None,
+                           breakpoint_id: str | None = None, depth: Literal["into", "over", "out"] = "into",
+                           endpoint: Endpoint = "client") -> dict:
+        """通过原版Kahlua断点/步进入口调试Lua，暂停后读取栈与局部变量；断连或30秒租约到期会恢复，不执行任意Lua表达式。file按实际原型文件名，line为1起始。"""
+        args = {"file": file, "line": line, "breakpoint_id": breakpoint_id, "depth": depth}
+        try:
+            return await asyncio.to_thread(debuggers.lua_request, action, {k:v for k,v in args.items() if v is not None}, endpoint)
+        except BridgeError as error:
+            raise ToolError(str(error)) from error
+
+    @mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False, "openWorldHint": False})
+    async def pz_native_debug(action: Literal["attach", "detach", "status", "pause", "resume", "modules",
+                              "threads", "symbols", "stack", "registers", "locals", "breakpoint_add",
+                              "breakpoint_remove", "step", "memory"] = "status",
+                              pid: Annotated[int, Field(ge=1)] | None = None,
+                              symbol: str | None = None, pattern: str = "*",
+                              address: str | None = None, breakpoint_id: Annotated[int, Field(ge=0)] | None = None,
+                              thread_id: Annotated[int, Field(ge=0)] | None = None,
+                              frame: Annotated[int, Field(ge=0, le=63)] = 0, depth: Literal["into", "over", "out"] = "into",
+                              bytes: Annotated[int, Field(ge=1, le=65536)] = 64,
+                              offset: Annotated[int, Field(ge=0)] = 0, limit: Limit = 32,
+                              endpoint: Endpoint = "client") -> dict:
+        """Windows原生调试引擎：模块/符号、OS线程栈和寄存器、断点/步进及有限内存读取。locals需要PDB符号；不提供任意调试器命令。detach恢复目标且移除调试器断点。"""
+        args = {"pid": pid, "symbol": symbol, "pattern": pattern, "address": address, "breakpoint_id": breakpoint_id,
+            "thread_id": thread_id, "frame": frame, "depth": depth, "bytes": bytes, "offset": offset, "limit": limit}
+        try:
+            return await asyncio.to_thread(debuggers.native_request, action, args, endpoint)
+        except BridgeError as error:
+            raise ToolError(str(error)) from error
 
     @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
     async def pz_read_console(cursor: dict | None = None,

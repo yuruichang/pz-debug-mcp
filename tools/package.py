@@ -29,7 +29,7 @@ with ZipFile(dist / f'PZDebugMCP-source-{version}.zip', 'w', ZIP_DEFLATED) as ar
         relative = file.relative_to(root)
         if not file.is_file() or any(part in {'.venv', 'build', 'dist', '__pycache__', '.git', '.baoyu-skills', 'recordings', 'Lua', 'Saves'} or part.endswith('.egg-info') for part in relative.parts):
             continue
-        if file.name.startswith('mcp-config.') or file.name == 'dependencies-lock.txt' or file.suffix in {'.sqlite3', '.db', '.log'} or '.sqlite3-' in file.name:
+        if file.name.startswith('mcp-config.') or file.name == 'dependencies-lock.txt' or file.suffix in {'.sqlite3', '.db', '.log', '.dll'} or '.sqlite3-' in file.name:
             continue
         archive.write(file, 'PZDebugMCP/' + relative.as_posix())
 manifest = []

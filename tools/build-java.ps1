@@ -24,12 +24,12 @@ $argsFile = Join-Path $root 'build/java/sources.txt'
 $sourceNames = @($sources | ForEach-Object { '"' + $_.FullName.Replace('\', '/') + '"' })
 [IO.File]::WriteAllLines($argsFile, [string[]]$sourceNames, [Text.UTF8Encoding]::new($false))
 $classpath = "$GameDir;$gameJar;$buddyJar"
-& $compiler --release 25 -encoding UTF-8 -cp $classpath -d $classes "@$argsFile"
+& $compiler --release 25 -g -encoding UTF-8 -cp $classpath -d $classes "@$argsFile"
 if ($LASTEXITCODE -ne 0) { throw 'Java bridge compilation failed' }
 $destination = Join-Path $root 'Contents/mods/PZDebugMCP/42/media/java'
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
 $manifest = Join-Path $root 'build/java/MANIFEST.MF'
-@('Manifest-Version: 1.0', 'Implementation-Title: PZDebugMCP', 'Implementation-Version: 0.3.1', '') | Set-Content -LiteralPath $manifest -Encoding ascii
+@('Manifest-Version: 1.0', 'Implementation-Title: PZDebugMCP', 'Implementation-Version: 0.4.0', '') | Set-Content -LiteralPath $manifest -Encoding ascii
 & $jarTool --create --file (Join-Path $destination 'PZDebugMCP.jar') --manifest $manifest -C $classes .
 if ($LASTEXITCODE -ne 0) { throw 'Java bridge packaging failed' }
 if ($Test) {
@@ -41,6 +41,11 @@ if ($Test) {
     [IO.File]::WriteAllLines($testArgs, [string[]]$testNames, [Text.UTF8Encoding]::new($false))
     & $compiler --release 25 -encoding UTF-8 -cp "$classes;$classpath" -d $testClasses "@$testArgs"
     if ($LASTEXITCODE -ne 0) { throw 'Java test compilation failed' }
+    $patchFixture = Join-Path $root 'build/java/patch-fixture.jar'
+    & $jarTool --create --file $patchFixture -C $testClasses fixture/PatchFixture.class
+    if ($LASTEXITCODE -ne 0) { throw 'Patch fixture packaging failed' }
+    & $java -cp "$classes;$testClasses;$classpath" com.yuruichang.pzdebug.PatchCheck $patchFixture
+    if ($LASTEXITCODE -ne 0) { throw 'Patch catalog checks failed' }
     $agentManifest = Join-Path $root 'build/java/TEST-AGENT.MF'
     @('Manifest-Version: 1.0', 'Premain-Class: fixture.TestAgent', 'Can-Retransform-Classes: true', '') | Set-Content -LiteralPath $agentManifest -Encoding ascii
     $agentJar = Join-Path $root 'build/java/test-agent.jar'
@@ -51,4 +56,9 @@ if ($Test) {
     $env:PZDEBUG_JAVA_TEST_AGENT = $agentJar
     & $java --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED "-javaagent:$agentJar" -cp $env:PZDEBUG_JAVA_TEST_CP com.yuruichang.pzdebug.TestMain
     if ($LASTEXITCODE -ne 0) { throw 'Java bridge checks failed' }
+    Push-Location -LiteralPath $GameDir
+    try {
+        & $java --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED "-javaagent:$agentJar" -cp $env:PZDEBUG_JAVA_TEST_CP com.yuruichang.pzdebug.DebugCheck
+        if ($LASTEXITCODE -ne 0) { throw 'Kahlua debugger checks failed' }
+    } finally { Pop-Location }
 }

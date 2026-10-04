@@ -124,7 +124,7 @@ class Bridge:
     def request(self, endpoint: str, operation: str, arguments: dict | None = None) -> dict:
         directory = self.directory(endpoint)
         heartbeat = read_json(directory / 'heartbeat.json')
-        if (operation in {'status', 'java_runtime', 'read_errors', 'trace_java'}
+        if (operation in {'status', 'java_runtime', 'read_errors', 'trace_java', 'lua_debug'}
                 and heartbeat and heartbeat.get('runtime_mailbox') == 'runtime'
                 and heartbeat.get('backend') == 'zombiebuddy_java'):
             directory = directory / 'runtime'

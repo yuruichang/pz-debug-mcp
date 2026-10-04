@@ -1,5 +1,28 @@
 # 验证记录
 
+## 0.4.0 调试控制检查（2026-10-04）
+
+- 66项Python/Lua/MCP回归测试通过，18个工具通过标准SDK握手与调用；原版Kahlua、Java桥、补丁注解与工坊内容校验通过。
+- 独立JDI目标VM已验证真实Java断点、局部变量、栈、into/over/out、当前VM方法bytecode摘要、断连恢复及控制器EOF；无测试方法结果改写。
+- 本机游戏自带Kahlua已验证Lua断点、局部值、step-out、正常断连和租约过期恢复。使用实际UIManager.debugBreakpoint插桩，保持原脚本返回17，并清除本会话断点。
+- Windows DbgEng控制器在独立C++程序上验证模块、导出与PDB符号、真实机器码断点、栈与局部、有限内存、单步/step-out、detach及控制器退出保持目标存活。
+- 已读取真实拖挂模组JAR的四个Patch声明并验证批准摘要不匹配会被拒绝；提取不加载/初始化其中的类，声明不当作最终应用证据。
+- 控制器协议覆盖结构化错误、EOF、超时/未确认与关闭清理。原生程序持续触发自行处理的首次异常，验证调试器保持应用处理路径；运行期间强制结束控制器后目标计数继续推进。
+
+## 0.4.0 实际存档验收（2026-10-04）
+
+- 真实42.21单机Debug存档确认version=0.4.0、backend=zombiebuddy_java、JDWP仅监听127.0.0.1:8801，失焦暂停关闭。
+- 补丁目录返回98条声明，target_registry_available=true、source_errors为空；提供者、目标和Advice签名可分页读取，引擎准备日志/变换报告独立标记。Core.getVersionNumber的当前VM方法摘要和分页字节码取回成功。
+- Java方法断点和行断点在实际游戏线程命中，读取BridgeRuntime.tick调用栈、this及now局部变量，step-over和继续成功。暂停游戏线程时JVM诊断邮箱仍返回指标。完整into/over/out另由独立JDI程序验证。
+- Lua断点命中example_debug；读取doubled=10、answer=17，into从第8行到9行、over到10行、out返回调用者。继续/断连后测试返回17且passed=true，不改变存档。
+- 原生模块目录读取159项，含JVM、FMOD、Bullet和其他引擎模块；实际命中NtWaitForSingleObject机器码断点，读取跨系统/JVM调用栈、RIP和8字节指令，step-into确认指令地址前进。实际JVM缺少私有PDB的locals请求明确返回不可用；独立C++程序的匹配PDB局部值读取通过。
+- 初次原生联调中系统DbgEng异常退出，游戏留下暂停线程。已核对代码字节未残留断点并恢复，随后游戏心跳和窗口响应正常。修正普通首次异常过滤设置，增加父进程暂停/断点恢复守卫；新后端重新连接、运行、暂停和detach通过，恢复守卫报告无错误。
+- 最终Java/原生控制器均关闭，Lua断点与排队命令清空，游戏快照持续更新，recorder.last_error=null，错误游标无新增Lua事件。所有原始结果保存在忽略的本机build目录，未上传。
+
+原生强杀若发生在尚未处理的调试异常上，Windows仍可能终止目标；测试通过的是正常detach/EOF和运行时控制器退出。恢复守卫仅处理本会话已知的软件断点字节和一个额外暂停计数，不声称任意崩溃都能恢复。FMOD/Bullet私有类型与源码行仍需合法匹配的PDB；专用服务器未进行本轮联调。
+
+以下为历史版本记录。
+
 ## 0.3.0 Java 迁移检查（2026-10-04）
 
 - Java 25 编译并使用本机 ZombieBuddy 2.3.2 的 ByteBuddy，在真实 JVM Instrumentation 中检查字段、身份句柄、未初始化静态类、数组边界和有界追踪。原方法返回、异常及 void 行为保持不变，停止后不再采样。

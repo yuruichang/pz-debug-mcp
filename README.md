@@ -1,4 +1,4 @@
-# PZ Debug MCP 0.3.1
+# PZ Debug MCP 0.4.0
 
 **简体中文** | [English](README.en.md)
 
@@ -6,11 +6,11 @@
 
 保留原文件桥协议和全部既有工具，增加 Java 运行时查询、字段检查和有界方法追踪。Java 诊断邮箱独立于游戏请求：Lua 暂停或游戏请求等待期间，仍可取回已有记录、缓存错误和 JVM 状态。详细边界见 [Java 桥接说明](docs/JAVA_BRIDGE.md)。
 
-目标为 **B42.21.0、Java 25、ZombieBuddy 2.3.2**，已兼容本机优化版；ZombieBuddy 3.x 的新包名 API 尚未适配。旧 Lua 版有实际存档验证记录；0.3.1 Java 版通过 JVM、MCP 和原版 Kahlua 检查，实际存档启动验收单独记录在 [验证说明](VALIDATION.md)。B42.20 与 B41 未验证。
+目标为 **B42.21.0、Java 25、ZombieBuddy 2.3.2**，已兼容本机优化版；ZombieBuddy 3.x 的新包名 API 尚未适配。旧 Lua 版有实际存档验证记录；0.4.0 Java 版通过 JVM、MCP 和原版 Kahlua 检查，实际存档启动验收单独记录在 [验证说明](VALIDATION.md)。B42.20 与 B41 未验证。
 
 ## 安装与连接
 
-需要 Python 3.11+，游戏已安装并启用 ZombieBuddy。源码安装还需 JDK 25：
+需要 Python 3.11+，游戏已安装并启用 ZombieBuddy。源码安装还需 JDK 25、Visual Studio C++ Build Tools与Windows SDK：
 
 ```powershell
 .\setup.ps1 -Development
@@ -66,6 +66,9 @@
 | `pz_java_runtime` | JVM 指标、线程栈、已加载类、Java 模组/补丁元数据及对象根 |
 | `pz_inspect_java` | Java 私有/静态字段、数组和方法元数据；明确报告访问边界 |
 | `pz_trace_java` | 指定 Java 方法的参数、返回、异常和耗时，有界采样 |
+| `pz_java_debug` | 外部JDI：Java断点、局部变量、线程与栈、单步及当前VM bytecode摘要 |
+| `pz_lua_debug` | 原版Kahlua：Lua断点、暂停栈/局部变量、单步和继续 |
+| `pz_native_debug` | Windows原生：模块/符号、机器码断点、栈、寄存器、PDB局部变量及有限内存读取 |
 
 ## 通用数据采集与按需取回
 
@@ -183,7 +186,7 @@ if not B.reloading then init() end
 
 ## 协议与故障处理
 
-邮箱位于 `Zomboid/Lua/PZDebugMCP/{client,server}/`，协议版本 1：
+邮箱位于 `Zomboid/Lua/PZDebugMCP/{client,server}/`，协议版本 1；外部Java/原生控制器不依赖游戏邮箱，在暂停时仍可控制目标：
 
 - `heartbeat.json`：Java 约每 500 ms 更新会话、版本和 Debug 状态；超过三秒视为离线。
 - `request.json`：Python 原子替换，包含随机请求 ID、单调递增序号、会话、执行端和绝对过期时间。游戏拒绝已处理的旧序号，延迟重传不会再次执行。
@@ -195,7 +198,7 @@ if not B.reloading then init() end
 
 `TIMEOUT` 只表示没有及时收到结果，**不代表代码取消或未执行**。已经领取却没有完成结果的请求，会让同一邮箱中的后续请求返回 `INDETERMINATE`；独立诊断邮箱仍可继续工作。等待迟到的结果，或重启游戏执行端建立新会话。不要自动重试修改操作，也不要在游戏运行时手动清空 `claim.json` 来绕过此检查。
 
-普通暂停时同时尝试 `OnTickEvenPaused`；Lua 暂停时独立 Java 心跳、JVM 查询、缓存和离线归档仍可读取，游戏对象查询需要回调恢复。整个 JVM 暂停会阻断桥接。协程、调用帧和局部变量接口目前仅列入目录，未审核项不调用。本版不提供完整断点/单步控制、JDWP 或任意 Lua 执行。
+普通暂停时同时尝试 `OnTickEvenPaused`；Lua 暂停时独立 Java 心跳、JVM 查询、缓存和离线归档仍可读取，游戏对象查询需要回调恢复。整个 JVM 暂停会阻断桥接。Lua 暂停帧与局部变量通过 pz_lua_debug 读取；原版目录中未审核的查询仍不执行。0.4.0增加独立Java与Lua断点/单步控制及Windows原生调试，见[调试控制](docs/DEBUGGING.md)。Java需先运行 `enable-debugging.ps1` 启用本机JDWP并重启；不提供任意Lua/Java表达式执行，原生源码/私有类型需要匹配PDB。
 
 ## 开发验证与打包
 
@@ -214,7 +217,7 @@ if not B.reloading then init() end
 
 加 `-RefreshCatalog` 可从指定游戏重新提取全局及公开类型签名；生成内容只有接口元数据，不包含游戏实现。当前目录与测试针对 42.21.0，换版本仍需重新审核与实际联调。
 
-产物包括 `dist/PZDebugMCP-mod-0.3.1.zip`、`dist/PZDebugMCP-workshop-0.3.1.zip` 和 `dist/PZDebugMCP-source-0.3.1.zip`，附 SHA-256 校验文件。工坊包直接解压到缓存的 Workshop 目录，包含私密可见性的 workshop.txt、256×256 preview.png、common/42 元数据与展示图，以及 Java JAR。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
+产物包括 `dist/PZDebugMCP-mod-0.4.0.zip`、`dist/PZDebugMCP-workshop-0.4.0.zip` 和 `dist/PZDebugMCP-source-0.4.0.zip`，附 SHA-256 校验文件。工坊包直接解压到缓存的 Workshop 目录，包含私密可见性的 workshop.txt、256×256 preview.png、common/42 元数据与展示图，以及 Java JAR。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
 
 实际游戏验收：进入 Debug 测试存档 → `pz_status` 在线且 `debug_enabled=true` → 自检通过 → 驾驶车辆读取快照 → 完成一组拖挂采样 → 连续重载 `example_counter` 两次并确认测试仍能执行。服务端需另做同样的验收。
 
@@ -230,3 +233,9 @@ if not B.reloading then init() end
 ## 创意工坊暂存校验
 
 暂存默认可见性为 private，新条目不预填 Workshop ID。安装和构建只准备本机文件，不提交 Steam 条目。退出游戏后可执行 `tools/check-workshop.ps1`，使用本机游戏的 SteamWorkshopItem.validateContents 校验图片、版本目录、mod.info 与文件类型。此校验不调用 create/submitUpdate。
+
+## 断点与补丁注册
+
+`pz_java_runtime(section=patches)` 从实际批准的已加载JAR读取独立补丁表，不依赖ZombieBuddy优化私有类。声明、准备日志、变换报告与VM当前方法证据分别标注，不将意图视为成功应用。Java控制器支持未来加载类、行/异常断点、栈与局部、into/over/out；Lua控制器使用原版暂停入口并以租约保证断连恢复。Windows原生控制器支持模块/符号、OS线程、栈、断点与步进，缺少PDB时只提供可得的地址/导出信息。
+
+退出游戏后运行 `enable-debugging.ps1`，它仅添加127.0.0.1:8801、suspend=n的JDWP并备份原启动参数。用 `-Disable` 撤销。完整用法、生命周期和测试边界见[调试控制](docs/DEBUGGING.md)。
