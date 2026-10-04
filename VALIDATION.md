@@ -16,6 +16,20 @@
 
 0.3.1改用默认类名注册，Kahlua检查直接调用生产注册方法，并使用本机ZombieBuddy的实际Exposer与游戏LuaManager.Exposer，确认入口和describe等方法存在，再检查Java适配全过程。替换测试open前明确移除原绑定，避免重载合并选中生产缓存入口。57项自动测试和实际注册路径Kahlua检查通过；新版原生代理/存档验收继续等待更新后启动。
 
+## 0.3.1 实际存档与原生代理验收
+
+2026-10-04用户重启进入42.21单机Debug存档后，通过标准MCP stdio确认15个工具、backend=zombiebuddy_java、version=0.3.1、原生Instrumentation、初始化检查及字节码观察器已生效。失焦暂停确认关闭。
+
+- 成功读取平台线程栈、堆/GC、约19000个已加载类目录及10个Java模组的加载状态和JAR元数据。
+- 读取角色Java私有字段、审核健康值、气温、游戏年份和时间；读取拖挂增强模组RuntimeStatus与Viewpoint PerformanceOverlay的私有静态字段。AtomicLong等对象只返回句柄，不据此宣称其封装字段已可读。
+- 在实际原生代理下对Core.getVersionNumber精确安装有界追踪，取得三条真实调用，返回值均与原值一致，无异常与采样丢弃。追踪已停止。
+- 取回并归档java_runtime、java_mods、java_transform、java_trace、object、query记录；自动记录持续增长，普通记录queue_dropped=0、last_error=null。100ms时间戳订阅正常推进，临时订阅已移除。
+- 本轮前后无新增Debug错误。对未加载的PZPerf类查询返回CLASS_NOT_LOADED及一次桥接request_error，未触发Lua Debug错误；不把该类列为实际字段通过。
+
+实际运行的ZombieBuddy缺少目标注册表，patches明确返回不可用；观察器提供随后观察到的阶段摘要，不能证明最终实现或完整补丁链。启动期观察队列已有丢弃计数，普通数据写盘队列未丢弃；字节码摘要不能宣称全量。
+
+归档接入前的环形覆盖缺口已以gap报告。全程保留收到的记录需要保持MCP服务连接；本次临时验证客户端关闭后，游戏侧仍继续采集到环形缓冲。实际数据仅保存在本机缓存与忽略的build/java文件中，没有上传。
+
 日期：2026-10-03。目标：本机 Project Zomboid 42.21.0（revision 4a0e9546ec）。
 
 ## 通过
