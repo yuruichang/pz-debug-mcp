@@ -18,7 +18,7 @@
 .\install-mod.ps1
 ```
 
-模组复制到 `%USERPROFILE%\Zomboid\mods\PZDebugMCP`。安装脚本会备份已有同名模组，不修改其他模组或存档的启用列表。在游戏中启用 **ZombieBuddy** 和 **PZDebugMCP**，完整重启并加入 `-debug`，允许本次生成的 Java JAR，然后进入测试存档。非 Debug 模式只返回状态，不执行调试请求。
+安装脚本默认准备 `%USERPROFILE%\Zomboid\Workshop\PZDebugMCP` 暂存包，模组位于其中的 `Contents\mods\PZDebugMCP`。已有本地 `mods\PZDebugMCP` 会移入暂存包，避免同一 Mod ID 重复加载；已有暂存模组更新前会备份，现有工坊 ID、可见性、说明和自定义预览保留。在游戏中启用 **ZombieBuddy** 和 **PZDebugMCP**，完整重启并加入 `-debug`，允许本次生成的 Java JAR，然后进入测试存档。非 Debug 模式只返回状态，不执行调试请求。
 
 进入游戏时模组自动把原版 `getOptionPauseOnFocusloss/setOptionPauseOnFocusloss` 设置为关闭，并每秒重新校验。切换到 AI 客户端时游戏继续运行。`pz_status` 的 `focus_pause.disabled=true` 表示设置已经生效；此功能不解除手动暂停、Lua 断点暂停或 JVM 暂停。
 
@@ -214,7 +214,7 @@ if not B.reloading then init() end
 
 加 `-RefreshCatalog` 可从指定游戏重新提取全局及公开类型签名；生成内容只有接口元数据，不包含游戏实现。当前目录与测试针对 42.21.0，换版本仍需重新审核与实际联调。
 
-产物为 `dist/PZDebugMCP-mod-0.3.1.zip` 和 `dist/PZDebugMCP-source-0.3.1.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
+产物包括 `dist/PZDebugMCP-mod-0.3.1.zip`、`dist/PZDebugMCP-workshop-0.3.1.zip` 和 `dist/PZDebugMCP-source-0.3.1.zip`，附 SHA-256 校验文件。工坊包直接解压到缓存的 Workshop 目录，包含私密可见性的 workshop.txt、256×256 preview.png、common/42 元数据与展示图，以及 Java JAR。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
 
 实际游戏验收：进入 Debug 测试存档 → `pz_status` 在线且 `debug_enabled=true` → 自检通过 → 驾驶车辆读取快照 → 完成一组拖挂采样 → 连续重载 `example_counter` 两次并确认测试仍能执行。服务端需另做同样的验收。
 
@@ -226,3 +226,7 @@ if not B.reloading then init() end
 - [MCP 传输规范](https://modelcontextprotocol.io/specification/latest/basic/transports)
 
 官方 Debug 模式不自带 MCP 端口。本项目通过游戏内 Mod 调用原版接口；本机文件与字节码核对优先于可能滞后的网页文档。
+
+## 创意工坊暂存校验
+
+暂存默认可见性为 private，新条目不预填 Workshop ID。安装和构建只准备本机文件，不提交 Steam 条目。退出游戏后可执行 `tools/check-workshop.ps1`，使用本机游戏的 SteamWorkshopItem.validateContents 校验图片、版本目录、mod.info 与文件类型。此校验不调用 create/submitUpdate。

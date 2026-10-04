@@ -17,6 +17,12 @@ with ZipFile(dist / f'PZDebugMCP-mod-{version}.zip', 'w', ZIP_DEFLATED) as archi
         if file.is_file():
             archive.write(file, 'PZDebugMCP/' + file.relative_to(mod).as_posix())
     archive.write(root / 'README.md', 'PZDebugMCP-README.md')
+with ZipFile(dist / f'PZDebugMCP-workshop-{version}.zip', 'w', ZIP_DEFLATED) as archive:
+    for name in ('workshop.txt', 'preview.png'):
+        archive.write(root / name, 'PZDebugMCP/' + name)
+    for file in sorted(mod.rglob('*')):
+        if file.is_file():
+            archive.write(file, 'PZDebugMCP/Contents/mods/PZDebugMCP/' + file.relative_to(mod).as_posix())
 with ZipFile(dist / f'PZDebugMCP-source-{version}.zip', 'w', ZIP_DEFLATED) as archive:
     for file in sorted(root.rglob('*')):
         relative = file.relative_to(root)
@@ -26,7 +32,7 @@ with ZipFile(dist / f'PZDebugMCP-source-{version}.zip', 'w', ZIP_DEFLATED) as ar
             continue
         archive.write(file, 'PZDebugMCP/' + relative.as_posix())
 manifest = []
-for name in (f'PZDebugMCP-mod-{version}.zip', f'PZDebugMCP-source-{version}.zip'):
+for name in (f'PZDebugMCP-mod-{version}.zip', f'PZDebugMCP-workshop-{version}.zip', f'PZDebugMCP-source-{version}.zip'):
     path = dist / name
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     manifest.append(f'{digest}  {name}')

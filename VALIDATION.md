@@ -30,6 +30,16 @@
 
 归档接入前的环形覆盖缺口已以gap报告。全程保留收到的记录需要保持MCP服务连接；本次临时验证客户端关闭后，游戏侧仍继续采集到环形缓冲。实际数据仅保存在本机缓存与忽略的build/java文件中，没有上传。
 
+## 创意工坊暂存迁移（2026-10-04）
+
+已将实际本地mod移动到Workshop/PZDebugMCP/Contents/mods/PZDebugMCP，原mods/PZDebugMCP路径不存在。模组ID、版本0.3.1和桥接实现保持一致，Java JAR SHA256仍为0cf99ee6e3886a5421d56839222f47fd5f55a3d3cb4aace4ef3586ffe7e39226。
+
+补齐workshop.txt、256×256 preview.png、common/mod.info，以及common/42的poster.png和icon.png。新暂存默认private，未填造Workshop ID，没有提交Steam条目。
+
+使用本机42.21原版SteamWorkshopItem.validateContents校验通过，标签Build 42/Interface属于原版允许列表。另用隔离缓存检查从local迁移、已有暂存更新备份、已有工坊设置保留和无重复活跃Mod ID。打包新增完整workshop ZIP与SHA256。
+
+这次仅更换目录和补齐展示/上传元数据，未重新编译Java桥接。迁移后尚未重新启动游戏验收；此前0.3.1桥接的实际存档结论保持原记录范围。
+
 日期：2026-10-03。目标：本机 Project Zomboid 42.21.0（revision 4a0e9546ec）。
 
 ## 通过

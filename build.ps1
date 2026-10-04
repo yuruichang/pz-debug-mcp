@@ -28,4 +28,7 @@ try {
 if ($LASTEXITCODE -ne 0) { throw 'Configuration generation failed' }
 & $runtime (Join-Path $root 'tools/package.py')
 if ($LASTEXITCODE -ne 0) { throw 'Packaging failed' }
-if ($InstallMod) { & (Join-Path $root 'install-mod.ps1') -ZomboidDir $ZomboidDir }
+if ($InstallMod) {
+    & (Join-Path $root 'install-mod.ps1') -ZomboidDir $ZomboidDir
+    & (Join-Path $root 'tools/check-workshop.ps1') -GameDir $GameDir -ZomboidDir $ZomboidDir -StagingDir (Join-Path $ZomboidDir 'Workshop/PZDebugMCP')
+}

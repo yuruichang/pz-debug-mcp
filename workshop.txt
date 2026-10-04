@@ -1,0 +1,17 @@
+version=1
+title=PZ Debug MCP - Java Debug Bridge
+description=[h1]PZ Debug MCP[/h1]
+description=通过本机 MCP 客户端查询 Project Zomboid 原版 Debug 数据、Java 模组状态和 JVM 指标，持续采集对象字段并按需取回本地记录。
+description=
+description=[h2]要求[/h2]
+description=Project Zomboid 42.21、Java 25、ZombieBuddy 2.3.2 及其 Java Agent。请启用 ZombieBuddy 与 PZDebugMCP，使用 -debug 启动，按提示允许本模组的 Java JAR，再进入测试存档。
+description=本模组还需要本机 Python 3.11+ MCP 服务；服务源码与安装说明随源码包提供。MCP 客户端须保持连接才能持续归档历史记录。
+description=
+description=[h2]功能[/h2]
+description=Java 字段和静态状态、线程栈、堆与 GC、加载类与模组信息、有界方法追踪、审核后的原版查询、车辆采样、预定义测试和受控 Lua 重载。自动关闭失焦暂停，保持手动暂停与断点语义。
+description=不提供任意 Lua/Java 执行、字段写入、完整断点/单步或原生引擎内部调试。只读范围、对象深度与记录容量均有明确限制。
+description=
+description=Mod ID: PZDebugMCP
+description=Version: 0.3.1
+tags=Build 42;Interface
+visibility=private
