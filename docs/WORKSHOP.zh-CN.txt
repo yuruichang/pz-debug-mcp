@@ -1,0 +1,37 @@
+[h1]PZ Debug MCP · 简体中文[/h1]
+把支持 MCP 的 AI 客户端连接到 Project Zomboid，在测试存档中查询原版 Debug 数据、Java 模组与 JVM 状态，并按需取回本机记录。
+
+[h2]需要独立的 MCP 程序[/h2]
+[b]订阅工坊模组后，还需要另行安装本机 MCP 程序。[/b] 工坊模组负责游戏内桥接与采集；独立 MCP 程序负责向 AI 客户端提供工具、读取桥接数据和归档。AI 客户端通过 stdio 启动该程序。
+[url=https://github.com/yuruichang/pz-debug-mcp]GitHub：MCP 程序源码与安装说明[/url]
+[url=https://github.com/yuruichang/pz-debug-mcp/blob/main/README.md]中文安装与连接文档[/url]
+当前代码仓库需要访问权限。请先取得源码并完成 MCP 配置，再进行游戏联调。
+
+[h2]功能[/h2]
+[list]
+[*]浏览原版 Debug 接口目录，读取审核范围内的玩家、世界、气候、沙盒、车辆等数据，以及 Java 对象字段和模组状态。
+[*]查询 JVM 线程、调用栈、堆与 GC、加载类、补丁声明及变换证据，支持有界方法追踪。
+[*]支持 Java/Lua 断点、暂停栈、局部变量、单步与继续；Windows 原生调试支持模块、符号、寄存器、机器码断点和有限内存读取。
+[*]后台持续采集并在本机保存；MCP 服务保持运行时自动归档，支持分页、历史记录和按需查询。
+[*]自动关闭失焦暂停，切换到 AI 工具时游戏可继续运行；保留手动暂停与断点暂停。另提供预定义测试与受控 Lua 重载。
+[/list]
+
+[h2]依赖与安装[/h2]
+[list]
+[*]当前验证版本：Project Zomboid 42.21.0、Java 25、ZombieBuddy 2.3.2 及其 Java Agent。
+[*]游戏所在机器需要 Python 3.11+、独立 MCP 程序及支持 MCP 的 AI 客户端。原生调试后端面向 Windows。
+[*]从源码构建需要完整 JDK 25、Visual Studio C++ Build Tools 和 Windows SDK。
+[/list]
+[olist]
+[*]安装 ZombieBuddy 及其 Java Agent，在游戏中启用 ZombieBuddy 和 PZDebugMCP。
+[*]从 GitHub 取得源码，按 README 运行 setup.ps1 -Development 和 build.ps1；构建时用 -GameDir 指定实际游戏安装目录。
+[*]将生成的 mcp-config.json 中 pz_debug 项加入 AI 客户端的 MCP 配置。--zomboid-dir 指向游戏缓存目录，不是 Steam 游戏安装目录；使用 -cachedir 时须保持路径一致。
+[*]以 -debug 完整重启游戏，允许新版 PZDebugMCP.jar，进入测试存档。先调用 pz_status 确认在线与 Debug 模式，再开始查询。
+[/olist]
+
+[h2]调试与记录范围[/h2]
+Java 断点需先退出游戏，运行 enable-debugging.ps1，再重启；默认 JDWP 仅监听本机 127.0.0.1:8801。原生源码定位、私有类型和局部变量需要匹配的 PDB。
+游戏侧记录采用有限轮换缓冲；要保留收到的完整历史，请从调试开始保持 MCP 服务连接。未审核方法不执行，未加载区域与缺失符号不能凭空补齐。服务端需在服务器所在机器运行 MCP 程序并访问对应缓存。
+[url=https://github.com/yuruichang/pz-debug-mcp/blob/main/docs/DEBUGGING.md]断点、原生调试与断连恢复说明[/url]
+
+Mod ID: PZDebugMCP | Version: 0.4.0

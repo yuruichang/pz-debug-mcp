@@ -1,0 +1,37 @@
+[h1]PZ Debug MCP · English[/h1]
+Connect an MCP-compatible AI client to Project Zomboid to inspect built-in Debug data, Java mods and JVM state in a test save, and retrieve local records on demand.
+
+[h2]A separate MCP program is required[/h2]
+[b]After subscribing to the Workshop mod, you must also install the local MCP program separately.[/b] The mod handles the in-game bridge and data collection. The separate MCP program exposes tools to your AI client, reads bridge data and archives records. Your AI client launches it through stdio.
+[url=https://github.com/yuruichang/pz-debug-mcp]GitHub: MCP program source and installation instructions[/url]
+[url=https://github.com/yuruichang/pz-debug-mcp/blob/main/README.en.md]English installation and connection guide[/url]
+The repository currently requires access permission. Obtain the source and configure MCP before testing the connection in game.
+
+[h2]Features[/h2]
+[list]
+[*]Browse the built-in Debug API catalog and read player, world, climate, sandbox and vehicle data under reviewed access rules, plus Java object fields and mod state.
+[*]Inspect JVM threads, stacks, heap and GC, loaded classes, patch declarations and transformation evidence; use bounded method tracing.
+[*]Set Java/Lua breakpoints, inspect paused stacks and locals, step and resume. Windows native debugging supports modules, symbols, registers, machine-code breakpoints and bounded memory reads.
+[*]Collect data continuously in the background and save it locally. A running MCP service automatically archives records for paging, historical access and on-demand queries.
+[*]Automatically disable pause on focus loss so the game can run while you switch to your AI client. Manual and breakpoint pauses are preserved. Registered tests and controlled Lua reloads are also available.
+[/list]
+
+[h2]Requirements and setup[/h2]
+[list]
+[*]Verified versions: Project Zomboid 42.21.0, Java 25, ZombieBuddy 2.3.2 and its Java Agent.
+[*]The game machine needs Python 3.11+, the separate MCP program and an MCP-compatible AI client. The native debugger targets Windows.
+[*]Building from source requires a full JDK 25, Visual Studio C++ Build Tools and the Windows SDK.
+[/list]
+[olist]
+[*]Install ZombieBuddy and its Java Agent, then enable ZombieBuddy and PZDebugMCP in game.
+[*]Obtain the source from GitHub and follow the README to run setup.ps1 -Development and build.ps1. Set -GameDir to your actual game installation directory when building.
+[*]Add the pz_debug entry from the generated mcp-config.json to your AI client's MCP configuration. --zomboid-dir points to the game cache, not the Steam installation. If you use -cachedir, keep these paths consistent.
+[*]Fully restart the game with -debug, approve the updated PZDebugMCP.jar and enter a test save. Call pz_status to confirm an online bridge and Debug mode before querying data.
+[/olist]
+
+[h2]Debugging and recording limits[/h2]
+For Java breakpoints, exit the game, run enable-debugging.ps1 and restart. JDWP listens only on the loopback address 127.0.0.1:8801 by default. Native source locations, private types and local variables require matching PDB symbols.
+Game-side recording uses a bounded rotating buffer. Keep the MCP service connected from the start of debugging to preserve the full history of received records. Unreviewed methods are not executed; unloaded areas and missing symbols cannot be reconstructed. Servers need the MCP program running on the server machine with access to its cache.
+[url=https://github.com/yuruichang/pz-debug-mcp/blob/main/docs/DEBUGGING.md]Breakpoints, native debugging and disconnect recovery guide[/url]
+
+Mod ID: PZDebugMCP | Version: 0.4.0
