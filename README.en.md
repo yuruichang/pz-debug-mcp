@@ -6,8 +6,6 @@ Connect an MCP-compatible client to Project Zomboid. The ZombieBuddy Java core c
 
 The original file bridge protocol and all existing tools are retained, with additional tools for Java runtime queries, field inspection, and bounded method tracing. The Java diagnostic mailbox runs independently of game requests: recorded data, cached errors, and JVM state remain accessible while Lua is paused or a game request is waiting. See the [Java bridge guide](docs/JAVA_BRIDGE.md) for detailed limits.
 
-Personal private repository: [yuruichang/pz-debug-mcp](https://github.com/yuruichang/pz-debug-mcp). Each completed and verified batch of code changes is committed and pushed. Runtime data, saves, game files, and machine-specific configuration are excluded.
-
 Targets **B42.21.0, Java 25, and ZombieBuddy 2.3.2**, including the optimized build installed locally. The renamed APIs in ZombieBuddy 3.x are not yet supported. The older Lua version has been tested in a real save. The 0.3.1 Java version passes JVM, MCP, and the game's Kahlua checks; actual save startup validation is documented separately in the [validation log](VALIDATION.md). B42.20 and B41 have not been verified. Supporting documents linked from this README are currently in Chinese.
 
 ## Installation and connection

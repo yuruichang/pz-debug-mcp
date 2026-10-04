@@ -6,8 +6,6 @@
 
 保留原文件桥协议和全部既有工具，增加 Java 运行时查询、字段检查和有界方法追踪。Java 诊断邮箱独立于游戏请求：Lua 暂停或游戏请求等待期间，仍可取回已有记录、缓存错误和 JVM 状态。详细边界见 [Java 桥接说明](docs/JAVA_BRIDGE.md)。
 
-个人私有仓库：[yuruichang/pz-debug-mcp](https://github.com/yuruichang/pz-debug-mcp)。每批完成并验证的代码修改均提交、推送；运行数据、存档、游戏文件与本机配置不上传。
-
 目标为 **B42.21.0、Java 25、ZombieBuddy 2.3.2**，已兼容本机优化版；ZombieBuddy 3.x 的新包名 API 尚未适配。旧 Lua 版有实际存档验证记录；0.3.1 Java 版通过 JVM、MCP 和原版 Kahlua 检查，实际存档启动验收单独记录在 [验证说明](VALIDATION.md)。B42.20 与 B41 未验证。
 
 ## 安装与连接
