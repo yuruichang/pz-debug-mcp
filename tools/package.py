@@ -16,9 +16,10 @@ with ZipFile(dist / f'PZDebugMCP-mod-{version}.zip', 'w', ZIP_DEFLATED) as archi
     for file in sorted(mod.rglob('*')):
         if file.is_file():
             archive.write(file, 'PZDebugMCP/' + file.relative_to(mod).as_posix())
-    archive.write(root / 'README.md', 'PZDebugMCP-README.md')
+    for name in ('README.md', 'README.en.md'):
+        archive.write(root / name, name)
 with ZipFile(dist / f'PZDebugMCP-workshop-{version}.zip', 'w', ZIP_DEFLATED) as archive:
-    for name in ('workshop.txt', 'preview.png'):
+    for name in ('workshop.txt', 'preview.png', 'README.md', 'README.en.md'):
         archive.write(root / name, 'PZDebugMCP/' + name)
     for file in sorted(mod.rglob('*')):
         if file.is_file():
@@ -26,7 +27,7 @@ with ZipFile(dist / f'PZDebugMCP-workshop-{version}.zip', 'w', ZIP_DEFLATED) as 
 with ZipFile(dist / f'PZDebugMCP-source-{version}.zip', 'w', ZIP_DEFLATED) as archive:
     for file in sorted(root.rglob('*')):
         relative = file.relative_to(root)
-        if not file.is_file() or any(part in {'.venv', 'build', 'dist', '__pycache__', '.git', 'recordings', 'Lua', 'Saves'} or part.endswith('.egg-info') for part in relative.parts):
+        if not file.is_file() or any(part in {'.venv', 'build', 'dist', '__pycache__', '.git', '.baoyu-skills', 'recordings', 'Lua', 'Saves'} or part.endswith('.egg-info') for part in relative.parts):
             continue
         if file.name.startswith('mcp-config.') or file.name == 'dependencies-lock.txt' or file.suffix in {'.sqlite3', '.db', '.log'} or '.sqlite3-' in file.name:
             continue
