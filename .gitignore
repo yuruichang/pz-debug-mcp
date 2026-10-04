@@ -13,3 +13,4 @@ recordings/
 *.db
 /Lua/
 /Saves/
+Contents/mods/PZDebugMCP/42/media/java/*.jar

@@ -5,6 +5,7 @@ $root = $PSScriptRoot
 $runtime = Join-Path $root '.venv/Scripts/python.exe'
 if (-not (Test-Path -LiteralPath $runtime)) { throw 'Run setup.ps1 -Development first' }
 $env:PYTHONUTF8 = '1'
+& (Join-Path $root 'tools/build-java.ps1') -GameDir $GameDir -Test
 if ($RefreshCatalog) {
     & $runtime (Join-Path $root 'tools/generate_catalog.py') --game-dir $GameDir
     if ($LASTEXITCODE -ne 0) { throw 'Official API signature extraction failed' }
@@ -16,11 +17,11 @@ $gameJava = Join-Path $GameDir 'jre64/bin/java.exe'
 if (-not (Test-Path -LiteralPath $gameJar)) { throw 'Game jar required for Kahlua verification; pass -GameDir' }
 $classes = Join-Path $root 'build/kahlua'
 New-Item -ItemType Directory -Path $classes -Force | Out-Null
-& javac -encoding UTF-8 -cp $gameJar -d $classes (Join-Path $root 'tests/KahluaCheck.java')
+& javac -encoding UTF-8 -cp $env:PZDEBUG_JAVA_TEST_CP -d $classes (Join-Path $root 'tests/KahluaCheck.java')
 if ($LASTEXITCODE -ne 0) { throw 'Kahlua test compilation failed' }
 Push-Location -LiteralPath $GameDir
 try {
-    & $gameJava -cp "$classes;$gameJar;$GameDir" KahluaCheck $root
+    & $gameJava --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED -cp "$classes;$env:PZDEBUG_JAVA_TEST_CP" KahluaCheck $root
     if ($LASTEXITCODE -ne 0) { throw 'Shipped Kahlua runtime tests failed' }
 } finally { Pop-Location }
 & $runtime (Join-Path $root 'tools/generate_config.py') --zomboid-dir $ZomboidDir

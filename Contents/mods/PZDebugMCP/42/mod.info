@@ -1,5 +1,10 @@
 id=PZDebugMCP
 name=PZ Debug MCP
-description=原版 Debug 数据 MCP 桥：通用接口与对象查询、持续采集与历史归档、自动关闭失焦暂停、车辆采样、预定义测试及受控重载。
-modversion=0.2.3
+description=ZombieBuddy Java Debug MCP 桥：Java 模组与 JVM 状态、对象字段、持续归档、原版 Debug 查询及自动关闭失焦暂停。
+modversion=0.3.0
 versionMin=42.21
+require=\ZombieBuddy
+javaJarFile=media/java/PZDebugMCP.jar
+javaPkgName=com.yuruichang.pzdebug
+ZBVersionMin=2.3.2
+ZBVersionMax=2.9.9

@@ -129,7 +129,8 @@ local function names(registry, kind)
 end
 
 handlers.status = function()
-    return { protocol = 1, version = '0.2.3', game_version = getCore():getVersionNumber(),
+    return { protocol = 1, version = '0.3.0', backend = B.java and 'zombiebuddy_java' or 'lua_fallback',
+        game_version = getCore():getVersionNumber(),
         session = B.session, endpoint = B.endpoint, timestamp_ms = now(), debug_enabled = isDebug(),
         mode = isServer() and 'server' or (isClient() and 'multiplayer_client' or 'singleplayer'),
         capabilities = { inspect_vehicle = true, vehicle_trace = true, run_test = true,
@@ -144,6 +145,10 @@ handlers.list_debug_interfaces = Data.list
 handlers.query_debug = Data.query
 handlers.configure_recorder = Data.configure
 handlers.watch_debug = Data.watch
+handlers.inspect_java = function(args)
+    if not B.java then fail('JAVA_UNAVAILABLE', 'ZombieBuddy Java bridge is not loaded') end
+    return Data.queryJava(args)
+end
 B.Data = Data
 
 local function collectErrors()
@@ -304,8 +309,34 @@ local function respond(request, ok, value)
         envelope.error = { code = 'SERIALIZATION', message = clip(data) }
         data = J.encode(envelope)
     end
+    if B.java then B.java.complete(data); return end
     write('response.json', data)
     write('response.ready.txt', request.id)
+end
+
+local function pollJava()
+    local text = B.java.takeRequest()
+    if not text then return end
+    local request = J.decode(text)
+    if request.expires_ms < now() then
+        respond(request, false, { code = 'EXPIRED', message = 'Request expired while waiting for the game thread' }); return
+    end
+    if not isDebug() then
+        respond(request, false, { code = 'DEBUG_DISABLED', message = 'Debug mode was disabled' }); return
+    end
+    local handler = handlers[request.operation]
+    if not handler then
+        respond(request, false, { code = 'UNKNOWN_OPERATION', message = 'Unsupported operation' }); return
+    end
+    local ok, value = pcall(handler, request.arguments)
+    if ok and type(value) == 'table' and value.__bridge_error then
+        ok, value = false, value.__bridge_error
+    end
+    if not ok then
+        value = type(value) == 'table' and value or { code = 'GAME_ERROR', message = clip(value) }
+        B.recordEvent('request_error', value.message or 'Unknown error')
+    end
+    respond(request, ok, value)
 end
 
 local function poll()
@@ -359,7 +390,9 @@ function B.start(endpoint)
     B.lastId, B.lastText, B.lastSequence = nil, nil, 0
     B.started, B.endpoint = true, endpoint
     B.path = 'PZDebugMCP/' .. endpoint .. '/'
-    B.session = string.format('%.0f', now()) .. '-' .. tostring(ZombRand(1000000000))
+    B.java = rawget(_G, 'PZDebugJava')
+    if B.java then B.session = B.java.open(endpoint)
+    else B.session = string.format('%.0f', now()) .. '-' .. tostring(ZombRand(1000000000)) end
     B.errorIndex, B.traceSequence, B.lastPoll, B.lastHeartbeat = 0, 0, 0, 0
     B.focusPause = Focus.apply(endpoint)
     Data.start(B, writeRaw)
@@ -370,17 +403,34 @@ function B.start(endpoint)
             if timestamp - B.lastHeartbeat >= 1000 then
                 B.lastHeartbeat = timestamp
                 B.focusPause = Focus.apply(B.endpoint)
-                jsonWrite('heartbeat.json', { protocol = 1, session = B.session, endpoint = B.endpoint,
-                    timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.2.3',
-                    focus_pause = B.focusPause, game_version = getCore():getVersionNumber() })
+                if not B.java then
+                    jsonWrite('heartbeat.json', { protocol = 1, session = B.session, endpoint = B.endpoint,
+                        timestamp_ms = timestamp, debug_enabled = isDebug(), version = '0.3.0',
+                        focus_pause = B.focusPause, game_version = getCore():getVersionNumber() })
+                end
             end
             if timestamp - B.lastPoll >= 100 then
                 B.lastPoll = timestamp
-                poll()
+                if B.java then pollJava() else poll() end
                 if isDebug() then collectErrors() end
             end
             if isDebug() then sampleTraces(timestamp) end
             Data.tick(timestamp, isDebug())
+            if B.java then
+                B.java.tick()
+                if timestamp - (B.lastPublish or 0) >= 500 then
+                    B.java.publish(J.encode(handlers.status()), isDebug())
+                    local cached = J.array()
+                    for i = math.max(1, #B.events - 63), #B.events do
+                        local event = B.events[i]
+                        cached[#cached + 1] = { sequence = event.sequence, timestamp_ms = event.timestamp_ms,
+                            kind = event.kind:sub(1, 64), message = event.message:sub(1, 1024),
+                            message_truncated = #event.message > 1024 }
+                    end
+                    B.java.publishErrors(J.encode({ events = cached, cursor = B.sequence }))
+                    B.lastPublish = timestamp
+                end
+            end
         end)
         if not ok and timestamp - (B.lastFailure or 0) >= 1000 then
             B.lastFailure = timestamp

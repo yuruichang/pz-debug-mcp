@@ -10,6 +10,8 @@ dist = root / 'dist'
 dist.mkdir(exist_ok=True)
 mod = root / 'Contents/mods/PZDebugMCP'
 version = tomllib.loads((root / 'pyproject.toml').read_text(encoding='utf-8'))['project']['version']
+if not (mod / '42/media/java/PZDebugMCP.jar').is_file():
+    raise SystemExit('Build the Java bridge before packaging')
 with ZipFile(dist / f'PZDebugMCP-mod-{version}.zip', 'w', ZIP_DEFLATED) as archive:
     for file in sorted(mod.rglob('*')):
         if file.is_file():

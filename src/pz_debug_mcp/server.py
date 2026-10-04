@@ -49,7 +49,8 @@ def create_server(bridge: Bridge) -> FastMCP:
     mcp = FastMCP("PZ Debug MCP", lifespan=lifespan, instructions=(
         "先查询 pz_status，确认执行端和 debug_enabled。仅调用已注册的有限操作。"
         "TIMEOUT/INDETERMINATE 不代表取消，不可自动重试修改操作。"
-        "采样 start 返回 trace_id，再用 read/stop 读取；断点与 JVM 暂停可能让桥接失去响应。"))
+        "采样 start 返回 trace_id，再用 read/stop 读取。Java 心跳、缓存和 JVM 查询独立于 Lua 回调；"
+        "游戏对象查询仍需游戏线程执行，整个 JVM 暂停会阻断通信。"))
 
     async def request(endpoint: str, operation: str, arguments: dict | None = None):
         try:
@@ -124,7 +125,8 @@ def create_server(bridge: Bridge) -> FastMCP:
 
     @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
     async def pz_read_recorded_data(after: Annotated[int, Field(ge=0)] = 0, limit: Limit = 50,
-                                    target: str | None = None, kind: Literal["global", "object", "query"] | None = None,
+                                    target: str | None = None, kind: Literal["global", "object", "query", "java_runtime",
+                                    "java_mods", "java_transform", "java_trace", "java_error"] | None = None,
                                     session: str | None = None, recording_session: str | None = None,
                                     endpoint: Endpoint = "client") -> dict:
         """取回自动归档的全程记录；支持离线、历史会话、目标过滤和分页。available_sessions 列出已归档会话，gaps 标明桥接覆盖。"""
@@ -153,6 +155,33 @@ def create_server(bridge: Bridge) -> FastMCP:
         """给需要参数的通用查询注册游戏侧持续采集，不需 AI 反复调用；list/remove 管理当前会话订阅。"""
         return await request(endpoint, "watch_debug", {"action": action, "query": query,
             "watch_id": watch_id, "interval_ms": interval_ms})
+
+    @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
+    async def pz_java_runtime(section: Literal["summary", "metrics", "threads", "classes", "mods", "patches", "roots"] = "summary",
+                              filter: str = "", offset: Annotated[int, Field(ge=0)] = 0, limit: Limit = 50,
+                              endpoint: Endpoint = "client") -> dict:
+        """读取 JVM 状态、线程栈、已加载类、Java 模组/补丁元数据或已采集对象根。Lua 暂停时仍可读取；补丁目标不等同实际最终字节码。"""
+        return await request(endpoint, "java_runtime", {"section": section, "filter": filter, "offset": offset, "limit": limit})
+
+    @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
+    async def pz_inspect_java(target: str, action: Literal["inspect", "field", "methods", "call"] = "inspect",
+                              member: str | None = None, field_index: Annotated[int, Field(ge=0)] | None = None,
+                              offset: Annotated[int, Field(ge=0)] = 0, limit: Limit = 32,
+                              endpoint: Endpoint = "client") -> dict:
+        """在游戏线程读取 Java 对象字段/数组或方法元数据。target 为 Java 句柄、root:java:名称或 class:已加载类名；静态字段须确认已初始化，call 仅允许既有审核方法。"""
+        return await request(endpoint, "inspect_java", {"target": target, "action": action, "member": member,
+            "field_index": field_index, "offset": offset, "limit": limit})
+
+    @mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False})
+    async def pz_trace_java(action: Literal["start", "read", "stop"] = "read", class_name: str | None = None,
+                            method: str | None = None, parameters: list[str] | None = None,
+                            trace_id: str | None = None, duration_seconds: Annotated[int, Field(ge=1, le=30)] = 10,
+                            after: Annotated[int, Field(ge=0)] = 0, limit: Limit = 100,
+                            endpoint: Endpoint = "client") -> dict:
+        """有界追踪已加载 Java 方法的参数、返回值、异常类型和耗时。参数类型精确选择重载；一次一个追踪，最多八个目标。安装的惰性观察钩子保留至 JVM 重启，不改变方法结果。"""
+        return await request(endpoint, "trace_java", {"action": action, "class_name": class_name,
+            "method": method, "parameters": parameters or [], "trace_id": trace_id,
+            "duration_seconds": duration_seconds, "after": after, "limit": limit})
 
     @mcp.tool(annotations={"readOnlyHint": True, "idempotentHint": True, "openWorldHint": False})
     async def pz_read_console(cursor: dict | None = None,

@@ -9,6 +9,12 @@ for _, entry in ipairs(Catalog.globals) do
     table.insert(globalByName[entry.name], entry)
 end
 local function reject(code, message) error({ code = code, message = message }) end
+local function javaValue(text)
+    local envelope = J.decode(text)
+    if envelope.ok ~= true then return { __bridge_error = envelope.error } end
+    return envelope.result
+end
+function D.queryJava(args) return javaValue(D.java.query(J.encode(args))) end
 local function number(value, default, low, high)
     if value == nil or value == J.null then value = default end
     if type(value) ~= 'number' or value ~= math.floor(value) or value < low or value > high then reject('ARGUMENT', 'Integer out of range') end
@@ -35,6 +41,9 @@ local function descriptor(value, origin, depth, hint)
     local s = D.state
     if value == nil or value == J.null then return J.null end
     local kind = type(value)
+    if D.java and kind == 'userdata' then
+        return javaValue(D.java.describe(value, origin, depth or 0))
+    end
     if kind == 'number' or kind == 'boolean' then return value end
     if kind == 'string' then
         if #value > 4096 then return { kind = 'string', value = value:sub(1, 4096), truncated = true, length = #value } end
@@ -91,6 +100,11 @@ end
 
 local function appendRecord(kind, target, data)
     local s = D.state
+    if D.java then
+        local sequence = D.java.record(kind, target, J.encode(data))
+        s.sequence = sequence
+        return sequence
+    end
     local sequence = s.sequence + 1
     local entry = { session = s.session, sequence = sequence, timestamp_ms = getTimestampMs(), kind = kind, target = target, data = data }
     local encoded = J.encode(entry)
@@ -122,7 +136,10 @@ local function callArguments(arguments)
         if value == J.null then value = nil
         elseif type(value) == 'table' then
             if type(value.handle) ~= 'string' then reject('ARGUMENT', 'Object arguments require a handle') end
-            value = handle(value.handle).value
+            if D.java and value.handle:match(':j%d+$') then
+                value = D.java.resolve(value.handle)
+                if value == nil then reject('HANDLE_EXPIRED', 'Java object handle expired') end
+            else value = handle(value.handle).value end
         elseif type(value) ~= 'number' and type(value) ~= 'string' and type(value) ~= 'boolean' then reject('ARGUMENT', 'Unsupported argument') end
         values[i] = value
     end
@@ -263,7 +280,12 @@ end
 
 function D.list(args)
     local offset, limit = number(args.offset, 0, 0, 1000000), number(args.limit, 50, 1, 100)
-    if args.scope == 'object' then return inspect(args.handle, offset, limit, false) end
+    if args.scope == 'object' then
+        if D.java and type(args.handle) == 'string' and args.handle:match(':j%d+$') then
+            return javaValue(D.java.list(args.handle, offset, limit))
+        end
+        return inspect(args.handle, offset, limit, false)
+    end
     local entries = J.array()
     for _, original in ipairs(Catalog.globals) do
         if (not args.category or args.category == J.null or args.category == original.category)
@@ -287,6 +309,12 @@ end
 function D.query(args)
     local action, target = args.action or 'call', args.target
     if type(target) ~= 'string' then reject('ARGUMENT', 'A global name or object handle is required') end
+    if D.java and (target:match(':j%d+$') or target:sub(1, 6) == 'class:' or target:sub(1, 10) == 'root:java:') then
+        local query = {}
+        for key, value in pairs(args) do query[key] = value end
+        query.action = action
+        return D.queryJava(query)
+    end
     local entry = D.state.handles[target]
     local data
     if action == 'inspect' then
@@ -350,7 +378,7 @@ function D.status()
     local s = D.state
     local watched = 0
     for _ in pairs(s.watches) do watched = watched + 1 end
-    return { enabled = s.config.enabled, sequence = s.sequence, automatic_roots = #s.roots,
+    local result = { enabled = s.config.enabled, sequence = s.sequence, automatic_roots = #s.roots,
         global_api_signatures = #Catalog.globals, catalog_types = Catalog.type_count, watched_queries = watched,
         root_passes = s.rootPasses, roots_visited = s.rootsVisited, pending_jobs = s.queueTail - s.queueHead,
         handles_created = s.handleSequence, handles_evicted = s.handlesEvicted,
@@ -359,6 +387,12 @@ function D.status()
         handle_policy = 'identity_buckets_v1', automatic_object_graph = false, requires_arguments_are_on_demand = true,
         records_directory = 'Lua/PZDebugMCP/' .. D.endpoint .. '/records',
         last_error = s.lastError or J.null }
+    if D.java then
+        local javaStatus = J.decode(D.java.recorderStatus())
+        for key, value in pairs(javaStatus) do result[key] = value end
+        result.lua_adapter_error = s.lastError or J.null
+    end
+    return result
 end
 
 function D.watch(args)
@@ -400,12 +434,14 @@ function D.configure(args)
         end
     end
     if args.enabled ~= nil and args.enabled ~= J.null then s.config.enabled = args.enabled == true end
+    if D.java then javaValue(D.java.configure(J.encode(args))) end
     s.indexDirty = true
     return D.status()
 end
 
 function D.flush()
     local s = D.state
+    if D.java then s.indexDirty = false; return end
     local segments, first = J.array(), s.sequence + 1
     for _, segment in pairs(s.segments) do
         segments[#segments + 1] = segment
@@ -418,6 +454,7 @@ end
 
 function D.start(bridge, writer)
     D.endpoint, D.write = bridge.endpoint, writer
+    D.java = bridge.java
     local roots, seen = {}, {}
     local priority = { 'getPlayer', 'getCell', 'getWorld', 'getClimateManager', 'getGameTime', 'getCore' }
     for _, name in ipairs(priority) do

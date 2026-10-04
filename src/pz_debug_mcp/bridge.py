@@ -123,6 +123,11 @@ class Bridge:
 
     def request(self, endpoint: str, operation: str, arguments: dict | None = None) -> dict:
         directory = self.directory(endpoint)
+        heartbeat = read_json(directory / 'heartbeat.json')
+        if (operation in {'status', 'java_runtime', 'read_errors', 'trace_java'}
+                and heartbeat and heartbeat.get('runtime_mailbox') == 'runtime'
+                and heartbeat.get('backend') == 'zombiebuddy_java'):
+            directory = directory / 'runtime'
         directory.mkdir(parents=True, exist_ok=True)
         deadline = time.monotonic() + self.timeout
         with mailbox_lock(directory / "mailbox.lock", deadline):
@@ -188,7 +193,8 @@ class Bridge:
         index = read_json(directory / "index.json")
         if not index or index.get("schema") != 1:
             return {"records": [], "cursor": after, "missing": True, "session": None, "has_more": False}
-        if not isinstance(index.get('recorder'), dict) or index['recorder'].get('read_policy') != 'reviewed_allowlist_v1':
+        if not isinstance(index.get('recorder'), dict) or index['recorder'].get('read_policy') not in {
+                'reviewed_allowlist_v1', 'java_fields_reviewed_lua_v1'}:
             return {"records": [], "cursor": after, "session": None, "has_more": False,
                     "blocked": True, "reason": "Unverified or legacy recording policy; data files were not read"}
         current = index.get("session")

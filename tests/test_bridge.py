@@ -290,7 +290,7 @@ class FileTests(unittest.TestCase):
                     info = await session.initialize()
                     self.assertEqual(info.serverInfo.name, 'PZ Debug MCP')
                     tools = await session.list_tools()
-                    self.assertEqual(len(tools.tools), 12)
+                    self.assertEqual(len(tools.tools), 15)
                     status = await session.call_tool('pz_status')
                     self.assertFalse(status.isError)
                     status_data = json.loads(status.content[0].text)

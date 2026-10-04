@@ -7,6 +7,8 @@ import se.krka.kahlua.vm.*;
 import se.krka.kahlua.converter.*;
 import se.krka.kahlua.integration.expose.LuaJavaClassExposer;
 import zombie.Lua.KahluaNumberConverter;
+import com.yuruichang.pzdebug.PZDebugJava;
+import com.yuruichang.pzdebug.LuaFixture;
 
 public final class KahluaCheck {
     public static void main(String[] args) throws Exception {
@@ -82,7 +84,24 @@ public final class KahluaCheck {
         run(thread, environment, "local s=request('query_debug',{target='root:SandboxVars'}).result.data.value.handle; " +
             "local a=request('query_debug',{target=s,action='table',member='a'}).result.data.value.handle; " +
             "assert(a==nativeListHandle,'Mutable Java objects must retain their handle');", "mutable_identity");
-        System.out.println("Kahlua integration checks passed");
+        var adapter = platform.newTable();
+        for (var method : PZDebugJava.class.getDeclaredMethods()) {
+            if (!java.lang.reflect.Modifier.isPublic(method.getModifiers()) || method.getName().equals("open")) continue;
+            exposer.exposeGlobalClassFunction(adapter, PZDebugJava.class, method, method.getName());
+        }
+        exposer.exposeGlobalClassFunction(adapter, LuaFixture.class, LuaFixture.class.getMethod("open", String.class), "open");
+        environment.rawset("PZDebugJava", adapter);
+        for (var method : LuaFixture.class.getDeclaredMethods()) {
+            if (method.getName().equals("open")) continue;
+            exposer.exposeGlobalClassFunction(environment, LuaFixture.class, method, "java_" + method.getName());
+        }
+        int javaErrorsBefore = KahluaThread.m_errors_list.size();
+        run(thread, environment, Files.readString(root.resolve("tests/kahlua_java_cases.lua")), "java_adapter");
+        LuaFixture.close();
+        if (KahluaThread.m_errors_list.size() != javaErrorsBefore)
+            throw new AssertionError("Java adapter emitted Lua Debug errors: " +
+                KahluaThread.m_errors_list.subList(javaErrorsBefore, KahluaThread.m_errors_list.size()));
+        System.out.println("Kahlua integration checks passed (Lua and Java backends)");
     }
     private static void run(KahluaThread thread, KahluaTable env, String source, String name) throws Exception {
         Object[] result = thread.pcall(LuaCompiler.loadstring(source, name, env), new Object[0]);

@@ -1,6 +1,9 @@
 param([string]$ZomboidDir = (Join-Path $env:USERPROFILE 'Zomboid'))
 $ErrorActionPreference = 'Stop'
 $source = Join-Path $PSScriptRoot 'Contents/mods/PZDebugMCP'
+if (-not (Test-Path -LiteralPath (Join-Path $source '42/media/java/PZDebugMCP.jar'))) {
+    throw 'Java bridge JAR is missing. Run build.ps1 before installing from source.'
+}
 $modsDir = [IO.Path]::GetFullPath((Join-Path $ZomboidDir 'mods'))
 $target = [IO.Path]::GetFullPath((Join-Path $modsDir 'PZDebugMCP'))
 if ($target -ne (Join-Path $modsDir 'PZDebugMCP')) { throw 'Unexpected mod target' }
@@ -17,4 +20,4 @@ if (Test-Path -LiteralPath $target) {
 }
 Copy-Item -LiteralPath $source -Destination $target -Recurse
 Write-Output "Mod installed: $target"
-Write-Output 'Enable PZDebugMCP in the game mod list and start with -debug.'
+Write-Output 'Enable ZombieBuddy and PZDebugMCP, restart with -debug, and approve the Java JAR when prompted.'

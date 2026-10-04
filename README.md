@@ -1,23 +1,24 @@
-# PZ Debug MCP 0.2.3
+# PZ Debug MCP 0.3.0
 
-把支持 MCP 的 AI 客户端连接到 Project Zomboid，通过原版 Debug/Lua API 持续记录游戏数据，按需查询对象与历史数据。覆盖角色、世界、天气、时间、物品、脚本、调试选项和 Lua 运行时等接口，保留车辆专用采样、预定义测试与受控重载。
+把支持 MCP 的客户端连接到 Project Zomboid。ZombieBuddy Java 核心负责对象字段采集、JVM 和 Java 模组信息、文件通信与后台记录；Lua 适配原版 Debug 全局、表、车辆采样、预定义测试与受控重载。数据在本机归档，按需查询。
 
-采用分享会话的文件桥架构，并扩展为：**原版 Debug/Lua 数据 → 游戏侧持续采集 → 本机缓冲与后台历史归档 → AI 通过 MCP 按需取回**。AI 还可以通过带编号的文件请求查询指定对象，或注册带参数的持续采集任务。
+保留原文件桥协议和全部既有工具，增加 Java 运行时查询、字段检查和有界方法追踪。Java 诊断邮箱独立于游戏请求：Lua 暂停或游戏请求等待期间，仍可取回已有记录、缓存错误和 JVM 状态。详细边界见 [Java 桥接说明](docs/JAVA_BRIDGE.md)。
 
 个人私有仓库：[yuruichang/pz-debug-mcp](https://github.com/yuruichang/pz-debug-mcp)。每批完成并验证的代码修改均提交、推送；运行数据、存档、游戏文件与本机配置不上传。
 
-目标版本为 **B42.21.0**。已核对本机游戏 API，并在游戏自带 Kahlua 运行时执行测试；尚未在实际存档内联调。B42.20 与 B41 未验证。
+目标为 **B42.21.0、Java 25、ZombieBuddy 2.3.2**，已兼容本机优化版；ZombieBuddy 3.x 的新包名 API 尚未适配。旧 Lua 版有实际存档验证记录；0.3.0 Java 版通过 JVM、MCP 和原版 Kahlua 检查，实际存档启动验收单独记录在 [验证说明](VALIDATION.md)。B42.20 与 B41 未验证。
 
 ## 安装与连接
 
-需要 Python 3.11+。在此目录执行：
+需要 Python 3.11+，游戏已安装并启用 ZombieBuddy。源码安装还需 JDK 25：
 
 ```powershell
-.\setup.ps1
+.\setup.ps1 -Development
+.\build.ps1
 .\install-mod.ps1
 ```
 
-模组复制到 `%USERPROFILE%\Zomboid\mods\PZDebugMCP`。安装脚本会备份已有同名模组，不修改其他模组或存档的启用列表。在游戏中启用 **PZDebugMCP**，给游戏启动选项加入 `-debug`，然后进入测试存档。非 Debug 模式只返回状态，不执行调试请求。
+模组复制到 `%USERPROFILE%\Zomboid\mods\PZDebugMCP`。安装脚本会备份已有同名模组，不修改其他模组或存档的启用列表。在游戏中启用 **ZombieBuddy** 和 **PZDebugMCP**，完整重启并加入 `-debug`，允许本次生成的 Java JAR，然后进入测试存档。非 Debug 模式只返回状态，不执行调试请求。
 
 进入游戏时模组自动把原版 `getOptionPauseOnFocusloss/setOptionPauseOnFocusloss` 设置为关闭，并每秒重新校验。切换到 AI 客户端时游戏继续运行。`pz_status` 的 `focus_pause.disabled=true` 表示设置已经生效；此功能不解除手动暂停、Lua 断点暂停或 JVM 暂停。
 
@@ -57,19 +58,22 @@
 | `pz_run_test` | 已注册的预定义测试 |
 | `pz_reload_mod_lua` | 预注册模块的清理、原版重载和初始化 |
 | `pz_read_console` | 本机 `console.txt` 增量；离线也可读取 |
-| `pz_list_debug_interfaces` | 原版全局接口目录与对象的全部字段/方法，支持分类和分页 |
+| `pz_list_debug_interfaces` | 原版全局接口目录与对象字段/方法目录，支持分类和分页 |
 | `pz_query_debug` | 通用全局、对象方法、反射字段及 Lua 表查询；结果自动记录 |
 | `pz_read_recorded_data` | 按目标和类型分页检索自动归档的数据，支持历史会话与离线读取 |
 | `pz_configure_recorder` | 采集频率、执行预算、对象图深度、句柄容量及刷新周期 |
 | `pz_watch_debug` | 注册、列出和移除带参数接口的持续采集任务 |
+| `pz_java_runtime` | JVM 指标、线程栈、已加载类、Java 模组/补丁元数据及对象根 |
+| `pz_inspect_java` | Java 私有/静态字段、数组和方法元数据；明确报告访问边界 |
+| `pz_trace_java` | 指定 Java 方法的参数、返回、异常和耗时，有界采样 |
 
 ## 通用数据采集与按需取回
 
 随包附带从本机 42.21.0 签名生成的 **764 个全局 API** 和 **1152 个类型及其父类/接口** 的方法目录。当前只启用 **16 个经字节码审核的全局读取签名**及明确审核的对象方法。其他接口保留目录但默认禁用；不再根据 get/is/has 名称推断无副作用。参见 [读取审核](docs/READER_REVIEW.md)。
 
-桥接无需等待 AI 请求就会启动采集，轮询审核过的根与指定方法，记录健康、坐标、天气、时间、版本和设置等。SandboxVars 使用原始表读取。自动 `_G` 和未知 Java 对象图遍历已关闭；继承接口仍可浏览，但只有审核过的签名可以调用。未暴露成员不再试探调用，Lua 表的 getClass/__index 和表内函数不执行。
+桥接无需等待 AI 请求就会启动采集，轮询审核过的根与指定方法，记录健康、坐标、天气、时间、版本和设置等。SandboxVars 使用原始表读取。自动 `_G` 关闭；Java 核心按深度和容量预算遍历已有对象字段，未知 getter 不执行。继承方法通过 Java 元数据浏览，只有审核过的签名可以调用。未暴露成员不再试探调用，Lua 表的 getClass/__index 和表内函数不执行。
 
-每条记录有会话、递增序号、时间戳、目标和纯数据。对象以会话内句柄关联。手动字段检查仍使用原版反射索引；元数据未暴露时采用签名名称回退，未知类型报告不可验证。原版反射禁止的目标不绕过限制。
+每条记录有会话、递增序号、时间戳、目标和纯数据。对象以会话内句柄关联。Java 对象字段使用 Java 反射，包含可访问的私有应用字段；静态字段须确认已初始化，JDK 模块封装不可访问时报告原因。Lua 表保留原始读取，回退后端仍使用原版反射。
 
 句柄按对象身份分配，不按 Java equals/hashCode 的内容相等规则合并。相同内容的两个列表拥有不同句柄；身份哈希碰撞使用原始引用相等比较区分，可变对象内容改变后保持句柄。集合的 get/size 等访问器仍须单独审核，未审核时只浏览字段/方法元数据。
 
@@ -109,9 +113,9 @@
 
 `pz_read_recorded_data` 返回 `available_sessions`。指定 `recording_session` 可以检索审核策略下的旧会话；用上次 `cursor` 作为 `after` 分页，`session` 用于识别游标是否跨会话。旧版未审核的记录文件不会打开、归档或返回，旧数据库会话也默认隔离。`gaps` 标出已覆盖记录。要保留全程历史，请从调试开始就让 MCP 服务保持运行。
 
-完整目录不代表所有接口已审核或可执行。默认每 100 ms 调度，最多四项任务，约 2 ms 的协作预算，表遍历深度四层，最多 4096 个句柄。可用 `pz_configure_recorder` 调整预算，但不能因此放开未审核 getter。单个调用无法被预算强制中断。
+完整目录不代表所有接口已审核或可执行。Java 核心与 Lua 适配各自默认每 100 ms 调度，最多四项任务，各有约 2 ms 的协作预算，遍历深度四层，各自最多 4096 个句柄。可用 `pz_configure_recorder` 调整预算，但不能因此放开未审核 getter。单个调用无法被预算强制中断。
 
-`pz_status.recorder` 的 `read_policy=reviewed_allowlist_v1` 表示新版策略已生效，`automatic_object_graph=false` 表示未知对象自动遍历关闭。接口的后续启用需要先审核实现、补充白名单并验证。未加载区域、无限参数域和暂停执行路径仍有原版限制；不能把当前记录视为全量世界快照。
+`pz_status.live.backend=zombiebuddy_java`、`read_policy=java_fields_reviewed_lua_v1` 表示 Java 后端与新记录策略已加载；`automatic_object_graph=true` 仅表示字段图采集，未启用未知方法。`lua_fallback` 和旧策略表示 Java 未加载。接口的后续启用需要先审核实现、补充白名单并验证。未加载区域、无限参数域和暂停执行路径仍有原版限制；不能把当前记录视为全量世界快照。
 
 推荐先调用：
 
@@ -181,17 +185,17 @@ if not B.reloading then init() end
 
 邮箱位于 `Zomboid/Lua/PZDebugMCP/{client,server}/`，协议版本 1：
 
-- `heartbeat.json`：约每秒更新会话、版本和 Debug 状态；超过三秒视为离线。
+- `heartbeat.json`：Java 约每 500 ms 更新会话、版本和 Debug 状态；超过三秒视为离线。
 - `request.json`：Python 原子替换，包含随机请求 ID、单调递增序号、会话、执行端和绝对过期时间。游戏拒绝已处理的旧序号，延迟重传不会再次执行。
 - `claim.json`：游戏在操作前持久写入已领取编号。同一编号不会再次执行。
 - `response.json` 与 `response.ready.txt`：游戏先关闭响应文件，最后关闭完成标记；服务只接受编号和会话匹配的完整结果。
-- `mailbox.lock`：操作系统进程锁，每个执行端一次处理一个请求；服务退出后自动释放锁。
+- `mailbox.lock`：操作系统进程锁，每个邮箱一次处理一个请求；服务退出后自动释放锁。Java 诊断请求使用独立的 `runtime/` 邮箱。
 
 请求只允许有限的调试操作，不将文件内容当作 Lua 代码执行。JSON 大小最多 512 KiB，嵌套最多 24 层；心跳或响应正好处于写入期间会等待下一次读取。共享邮箱的两个 MCP 实例可以串行使用，不应有两个游戏实例共用同一个端点缓存目录。
 
 `TIMEOUT` 只表示没有及时收到结果，**不代表代码取消或未执行**。已经领取却没有完成结果的请求，会让后续请求返回 `INDETERMINATE`；等待迟到的结果，或重启游戏执行端建立新会话。不要自动重试修改操作，也不要在游戏运行时手动清空 `claim.json` 来绕过此检查。
 
-普通暂停时同时尝试 `OnTickEvenPaused`；Lua 断点暂停或整个 JVM 暂停时桥接可能无法响应。协程、调用帧和局部变量接口目前仅列入目录，未审核项不调用。本版不提供完整断点/单步控制、JDWP 或任意 Lua 执行。
+普通暂停时同时尝试 `OnTickEvenPaused`；Lua 暂停时独立 Java 心跳、JVM 查询、缓存和离线归档仍可读取，游戏对象查询需要回调恢复。整个 JVM 暂停会阻断桥接。协程、调用帧和局部变量接口目前仅列入目录，未审核项不调用。本版不提供完整断点/单步控制、JDWP 或任意 Lua 执行。
 
 ## 开发验证与打包
 
@@ -206,11 +210,11 @@ if not B.reloading then init() end
 .\build.ps1 -GameDir 'E:\Steam\steamapps\common\ProjectZomboid'
 ```
 
-构建需要 JDK 的 `javac`，并使用指定游戏自带 Java/Kahlua。它运行标准 MCP 握手、真实文件桥、并发与超时测试、Lua 5.1 行为测试，以及原版 Kahlua 的协议/车辆/重载/Unicode 检查。游戏对象与事件在这些自动测试中是受控桩，不替代实际存档联调。
+构建需要 JDK 25 的 `javac` 与已安装的 ZombieBuddy，并使用指定游戏自带 Java/Kahlua。它运行标准 MCP 握手、真实文件桥、并发与超时测试、Lua 5.1 行为测试，以及原版 Kahlua 的协议/车辆/重载/Unicode 检查。游戏对象与事件在这些自动测试中是受控桩，不替代实际存档联调。
 
 加 `-RefreshCatalog` 可从指定游戏重新提取全局及公开类型签名；生成内容只有接口元数据，不包含游戏实现。当前目录与测试针对 42.21.0，换版本仍需重新审核与实际联调。
 
-产物为 `dist/PZDebugMCP-mod-0.2.3.zip` 和 `dist/PZDebugMCP-source-0.2.3.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
+产物为 `dist/PZDebugMCP-mod-0.3.0.zip` 和 `dist/PZDebugMCP-source-0.3.0.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
 
 实际游戏验收：进入 Debug 测试存档 → `pz_status` 在线且 `debug_enabled=true` → 自检通过 → 驾驶车辆读取快照 → 完成一组拖挂采样 → 连续重载 `example_counter` 两次并确认测试仍能执行。服务端需另做同样的验收。
 
