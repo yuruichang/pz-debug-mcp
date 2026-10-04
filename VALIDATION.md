@@ -10,6 +10,12 @@
 
 以下为旧版本记录。
 
+## 0.3.1 启动注册修复
+
+实际0.3.0存档检查确认：ZombieBuddy已载入Java JAR，但同名显式别名注册删除了Lua类入口，运行后端为lua_fallback。它不是Java联调通过。
+
+0.3.1改用默认类名注册，Kahlua检查直接调用生产注册方法，并使用本机ZombieBuddy的实际Exposer与游戏LuaManager.Exposer，确认入口和describe等方法存在，再检查Java适配全过程。替换测试open前明确移除原绑定，避免重载合并选中生产缓存入口。57项自动测试和实际注册路径Kahlua检查通过；新版原生代理/存档验收继续等待更新后启动。
+
 日期：2026-10-03。目标：本机 Project Zomboid 42.21.0（revision 4a0e9546ec）。
 
 ## 通过

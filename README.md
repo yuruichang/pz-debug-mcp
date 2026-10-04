@@ -1,4 +1,4 @@
-# PZ Debug MCP 0.3.0
+# PZ Debug MCP 0.3.1
 
 把支持 MCP 的客户端连接到 Project Zomboid。ZombieBuddy Java 核心负责对象字段采集、JVM 和 Java 模组信息、文件通信与后台记录；Lua 适配原版 Debug 全局、表、车辆采样、预定义测试与受控重载。数据在本机归档，按需查询。
 
@@ -6,7 +6,7 @@
 
 个人私有仓库：[yuruichang/pz-debug-mcp](https://github.com/yuruichang/pz-debug-mcp)。每批完成并验证的代码修改均提交、推送；运行数据、存档、游戏文件与本机配置不上传。
 
-目标为 **B42.21.0、Java 25、ZombieBuddy 2.3.2**，已兼容本机优化版；ZombieBuddy 3.x 的新包名 API 尚未适配。旧 Lua 版有实际存档验证记录；0.3.0 Java 版通过 JVM、MCP 和原版 Kahlua 检查，实际存档启动验收单独记录在 [验证说明](VALIDATION.md)。B42.20 与 B41 未验证。
+目标为 **B42.21.0、Java 25、ZombieBuddy 2.3.2**，已兼容本机优化版；ZombieBuddy 3.x 的新包名 API 尚未适配。旧 Lua 版有实际存档验证记录；0.3.1 Java 版通过 JVM、MCP 和原版 Kahlua 检查，实际存档启动验收单独记录在 [验证说明](VALIDATION.md)。B42.20 与 B41 未验证。
 
 ## 安装与连接
 
@@ -214,7 +214,7 @@ if not B.reloading then init() end
 
 加 `-RefreshCatalog` 可从指定游戏重新提取全局及公开类型签名；生成内容只有接口元数据，不包含游戏实现。当前目录与测试针对 42.21.0，换版本仍需重新审核与实际联调。
 
-产物为 `dist/PZDebugMCP-mod-0.3.0.zip` 和 `dist/PZDebugMCP-source-0.3.0.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
+产物为 `dist/PZDebugMCP-mod-0.3.1.zip` 和 `dist/PZDebugMCP-source-0.3.1.zip`，附 SHA-256 校验文件。源码包不包含本机 Python 环境、游戏文件、记录数据库或本机路径配置。加 `-InstallMod` 可在验证通过后安装模组。
 
 实际游戏验收：进入 Debug 测试存档 → `pz_status` 在线且 `debug_enabled=true` → 自检通过 → 驾驶车辆读取快照 → 完成一组拖挂采样 → 连续重载 `example_counter` 两次并确认测试仍能执行。服务端需另做同样的验收。
 

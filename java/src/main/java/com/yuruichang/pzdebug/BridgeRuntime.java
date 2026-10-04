@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public final class BridgeRuntime implements AutoCloseable {
-    public static final String VERSION = "0.3.0";
+    public static final String VERSION = "0.3.1";
     public static final class Failure extends RuntimeException {
         final String code;
         public Failure(String code, String message) { super(message); this.code = code; }

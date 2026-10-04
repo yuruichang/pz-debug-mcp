@@ -1,4 +1,4 @@
-# Java 桥接 0.3.0
+# Java 桥接 0.3.1
 
 ## 数据与线程
 
@@ -73,6 +73,6 @@ game_thread_age_ms 表示最近游戏发布距离现在的时间。心跳在线�
 
 新记录策略为 java_fields_reviewed_lua_v1。Java 队列最多 1024 项，16 个轮换段，每段最多 128 项或 256 KiB；溢出和写盘故障通过计数/last_error 报告。只有关闭写入后的序号才发布到索引，Python 同时识别旧审核策略并保留原历史。
 
-0.3.0 面向 Java 25、PZ 42.21 和 ZombieBuddy 2.3.2 的旧包名 API，未适配 3.x。若 Java 未加载，status.backend 会明确为 lua_fallback；此时新增 Java 工具不可用，应检查加载日志、依赖、JAR 允许状态与版本。
+0.3.1 面向 Java 25、PZ 42.21 和 ZombieBuddy 2.3.2 的旧包名 API，未适配 3.x。若 Java 未加载，status.backend 会明确为 lua_fallback；此时新增 Java 工具不可用，应检查加载日志、依赖、JAR 允许状态与版本。
 
 JVM 管理接口提供平台线程栈、死锁和堆/GC 指标；虚拟线程未包含。完整断点、单步、局部变量、JFR 会话管理以及 Bullet/FM0D/OpenGL 原生内部调试仍未实现。

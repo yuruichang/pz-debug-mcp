@@ -1,7 +1,7 @@
 id=PZDebugMCP
 name=PZ Debug MCP
 description=ZombieBuddy Java Debug MCP 桥：Java 模组与 JVM 状态、对象字段、持续归档、原版 Debug 查询及自动关闭失焦暂停。
-modversion=0.3.0
+modversion=0.3.1
 versionMin=42.21
 require=\ZombieBuddy
 javaJarFile=media/java/PZDebugMCP.jar

@@ -84,11 +84,14 @@ public final class KahluaCheck {
         run(thread, environment, "local s=request('query_debug',{target='root:SandboxVars'}).result.data.value.handle; " +
             "local a=request('query_debug',{target=s,action='table',member='a'}).result.data.value.handle; " +
             "assert(a==nativeListHandle,'Mutable Java objects must retain their handle');", "mutable_identity");
-        var adapter = platform.newTable();
-        for (var method : PZDebugJava.class.getDeclaredMethods()) {
-            if (!java.lang.reflect.Modifier.isPublic(method.getModifiers()) || method.getName().equals("open")) continue;
-            exposer.exposeGlobalClassFunction(adapter, PZDebugJava.class, method, method.getName());
-        }
+        zombie.Lua.LuaManager.env = environment;
+        zombie.Lua.LuaManager.thread = thread;
+        zombie.ui.UIManager.defaultthread = thread;
+        zombie.Lua.LuaManager.exposer = new zombie.Lua.LuaManager.Exposer(converters, platform, environment);
+        com.yuruichang.pzdebug.Main.registerLua();
+        var adapter = (KahluaTable) environment.rawget("PZDebugJava");
+        if (adapter == null || adapter.rawget("describe") == null) throw new AssertionError("ZombieBuddy did not expose the Java bridge");
+        adapter.rawset("open", null);
         exposer.exposeGlobalClassFunction(adapter, LuaFixture.class, LuaFixture.class.getMethod("open", String.class), "open");
         environment.rawset("PZDebugJava", adapter);
         for (var method : LuaFixture.class.getDeclaredMethods()) {

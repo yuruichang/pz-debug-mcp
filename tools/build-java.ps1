@@ -29,7 +29,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Java bridge compilation failed' }
 $destination = Join-Path $root 'Contents/mods/PZDebugMCP/42/media/java'
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
 $manifest = Join-Path $root 'build/java/MANIFEST.MF'
-@('Manifest-Version: 1.0', 'Implementation-Title: PZDebugMCP', 'Implementation-Version: 0.3.0', '') | Set-Content -LiteralPath $manifest -Encoding ascii
+@('Manifest-Version: 1.0', 'Implementation-Title: PZDebugMCP', 'Implementation-Version: 0.3.1', '') | Set-Content -LiteralPath $manifest -Encoding ascii
 & $jarTool --create --file (Join-Path $destination 'PZDebugMCP.jar') --manifest $manifest -C $classes .
 if ($LASTEXITCODE -ne 0) { throw 'Java bridge packaging failed' }
 if ($Test) {

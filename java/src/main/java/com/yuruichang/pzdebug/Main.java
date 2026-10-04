@@ -6,10 +6,11 @@ public final class Main {
     private Main() {}
     public static void main(String[] args) {
         JavaDiagnostics.install();
-        Exposer.exposeClass(PZDebugJava.class, "PZDebugJava");
+        registerLua();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             PZDebugJava.close(); MethodTrace.close(); JavaDiagnostics.close();
         }, "PZDebugMCP-Shutdown"));
         System.out.println("[PZDebugMCP] Java " + BridgeRuntime.VERSION + " loaded");
     }
+    public static void registerLua() { Exposer.exposeClass(PZDebugJava.class); }
 }
